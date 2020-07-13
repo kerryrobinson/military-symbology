@@ -65,6 +65,7 @@
 			amplifiers: "ON"
 		};
 		
+		// Use the symbol ID code to display the symbol plus fields to define text modifiers
 		var dictionaryRendererFieldMap = {
 				sidc: "sidc_2525c",
 				//context: "context",
@@ -98,13 +99,10 @@
 		};
 		
 		
-		//const scale = 36112;
-		//const scale = 1155581;
+		// This dictionary renderer uses visual variables to size symbols according to the map view scale
 		const scale = 577791;
 		var dictionaryRenderer2525c_scaled = new DictionaryRenderer({
 			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
-            //scaleExpression:"200000/$view.scale",
-			//scaleExpression: "var size = 300000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
             fieldMap: dictionaryRendererFieldMap,
 			config: dictionaryRendererConfig,
 			visualVariables: [
@@ -131,6 +129,7 @@
 			config: dictionaryRendererConfig,
 		});
 		
+		// Create popups
 		var popupTemplateUnits = {
 			title: "[{symbolset} ({identity_})] {symbolentity}",
 			content: [
@@ -251,7 +250,6 @@
 		var mapView = new MapView({
 			container: "viewDiv",
 			map: map,
-			//scale: 300000,
 			zoom: 10,
 			rotationEnabled: false,
 			center: [-116.5893690,35.477]
@@ -319,7 +317,7 @@
 
 
 		
-		
+		// Apply configuration changes made by cloning the dictionary renderer
 		function adjustRenderer() {
 			var adjustedDictionaryRenderer;
 			var adjustedDictionaryRenderer_la;
@@ -335,7 +333,7 @@
 				condition = document.getElementById("sym-condition").value;
 				amplifiers = document.getElementById("sym-amplifiers").value;
 			}
-/*			adjustedDictionaryRenderer_scaled = dictionaryRenderer2525c_scaled.clone();
+			/*adjustedDictionaryRenderer_scaled = dictionaryRenderer2525c_scaled.clone();
 			adjustedDictionaryRenderer_scaled.fieldMap["a"]= a++;
 			with(adjustedDictionaryRenderer_la.config) {
 				frame = document.getElementById("sym-frame").value;
