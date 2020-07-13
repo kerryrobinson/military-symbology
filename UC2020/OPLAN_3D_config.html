@@ -98,9 +98,8 @@
 		
 		
 		var dictionaryRenderer2525d = new DictionaryRenderer({
-			//url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", // 2525c
- 			url: "https://devtesting.mapsdevext.arcgis.com/sharing/rest/content/items/7923dac92202452ab602359c3398e077", //2525d latest
-           fieldMap: dictionaryRendererFieldMap,
+			url: "https://devtesting.mapsdevext.arcgis.com/sharing/rest/content/items/7923dac92202452ab602359c3398e077", //2525d latest
+        	fieldMap: dictionaryRendererFieldMap,
 			config: dictionaryRendererConfig
 		});
 		
@@ -289,37 +288,10 @@
 			renderer: dictionaryRenderer2525d
 		});
 
-/*		var layerControlMeasuresPoints = new FeatureLayer({
-			title: "Control Measures - Points",
-			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/21",
-            outFields: ["*"],
-			popupTemplate: popupTemplateCM,
-			renderer: dictionaryRenderer2525c
-		});
 
-		var layerControlMeasuresLines = new FeatureLayer({
-			title: "Control Measures - Lines",
-			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/22",
-            outFields: ["*"],
-			popupTemplate: popupTemplateCM,
-			renderer: dictionaryRenderer2525c
-		});
-
-		var layerControlMeasuresAreas = new FeatureLayer({
-			title: "Control Measures - Areas",
-			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/23",
-            outFields: ["*"],
-			popupTemplate: popupTemplateCM,
-			renderer: dictionaryRenderer2525c
-		});
-*/
-
-		//map.add(layerControlMeasuresLines);
-		//map.add(layerControlMeasuresAreas);
 		map.add(layerUnits);
 		map.add(layerActivities);
 		map.add(layerAir);
-		//map.add(layerControlMeasuresPoints);
 
 
 		var spinning = false;
@@ -353,14 +325,7 @@
 		
 		function adjustRenderer() {
 			var adjustedDictionaryRenderer;
-			//switch(document.getElementById("sym-std").value) {
-			//	case "mil-std-2525c":
-					adjustedDictionaryRenderer = dictionaryRenderer2525d.clone();
-			//		break;
-			//	case "fic-jgsdf":
-			//		adjustedDictionaryRenderer = dictionaryRendererJGSDF.clone();
-			//		break;
-			//}
+			adjustedDictionaryRenderer = dictionaryRenderer2525d.clone();
 			with(adjustedDictionaryRenderer.config) {
 				frame = document.getElementById("sym-frame").value;
 				fill = document.getElementById("sym-fill").value;
@@ -370,12 +335,9 @@
 				condition = document.getElementById("sym-condition").value;
 				amplifiers = document.getElementById("sym-amplifiers").value;
 			}
-			//layerControlMeasuresLines.renderer = adjustedDictionaryRenderer;
-			//layerControlMeasuresAreas.renderer = adjustedDictionaryRenderer);
 			layerUnits.renderer = adjustedDictionaryRenderer;
 			layerActivities.renderer = adjustedDictionaryRenderer;
 			layerAir.renderer = adjustedDictionaryRenderer;
-			//layerControlMeasuresPoints.renderer = adjustedDictionaryRenderer;
 		}
 		
 		sceneView
@@ -469,13 +431,6 @@
 		/></div>  
 	<div id="options" class="esri-widget" style="width: 300px;">
 		<p>Select symbology options:</p>
-<!--		<div>
-			<label for="sym-std">Standard</label>
-			<select id="sym-std">
-				<option value="mil-std-2525c" selected>MIL-STD-2525c</option>
-				<option value="fic-jgsdf">Custom 2525C</option>
-			</select>
-		</div> -->
 		<div>
 			<label for="sym-frame">Frame</label>
 			<select id="sym-frame">

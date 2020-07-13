@@ -175,17 +175,10 @@
           url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/cheyenne-mil-tracks-stream/StreamServer",
           title: "Cheyenne Tracks", 
           outFields: ["*"],
-          // purgeOptions: {
-          //   keepLastOnly: true
-          // },
           elevationInfo: {
-				    mode: "relative-to-ground",
-            //featureExpressionInfo: {
-    		//			expression: "0",
-    		//		}
-  				},
-          //maximumTrackPoints:1,
-          renderer: dictRenderer2525C
+				    mode: "relative-to-ground"
+		  },
+         renderer: dictRenderer2525C
         });
 
 

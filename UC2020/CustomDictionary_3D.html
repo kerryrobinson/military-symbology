@@ -64,6 +64,7 @@
 			amplifiers: "ON"
 		};
 		
+		// Use the same field mapping for both renderers to highlight the differences
 		var dictionaryRendererFieldMap = {
 				sidc: "sidc",
 				additionalinformation:"additionalinformation",
@@ -129,12 +130,14 @@
 			}
 		});
 		
+		//Esri-hosted 2525C dictionary style
 		var dictionaryRenderer2525c = new DictionaryRenderer({
 			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
             fieldMap: dictionaryRendererFieldMap,
 			config: dictionaryRendererConfig
 		});
 		
+		//Custom dictionary style
 		var dictionaryRendererJGSDF = new DictionaryRenderer({
 			url:"https://www.arcgis.com/sharing/rest/content/items/0d6615ad869944cc8a81698d5536c726",
             fieldMap: dictionaryRendererFieldMap,
