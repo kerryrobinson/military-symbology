@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>Monterey COP - 2D with Config</title>
+	<style>
+		html,
+		body,
+		#viewDiv {
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			width: 100%;
+		}
+		#options {
+			padding: 1em;
+		}
+		#options > div {
+			padding: 0.4em;
+		}
+		select {
+			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+	</style>
+	<link rel="stylesheet" href="https://jsdev.arcgis.com/4.16/esri/themes/light/main.css" />
+	<script src="https://jsdev.arcgis.com/4.16/"></script>
+	<script>
+	var streamLayer;
+	require([
+		"esri/config",
+		"esri/portal/Portal",
+		"esri/Map",
+		"esri/views/MapView",
+		"esri/layers/FeatureLayer",
+        "esri/layers/StreamLayer",
+		"esri/renderers/DictionaryRenderer",
+		"esri/widgets/Expand",
+		"esri/widgets/BasemapGallery",
+		"esri/widgets/LayerList",
+		"esri/widgets/CoordinateConversion",
+		"esri/widgets/Fullscreen",
+		"esri/widgets/Feature"
+	], function(
+		esriConfig,
+		Portal,
+		Map,
+		MapView,
+		FeatureLayer,
+        StreamLayer,
+		DictionaryRenderer,
+		Expand,
+		BasemapGallery,
+		LayerList,
+		CoordinateConversion,
+		Fullscreen,
+		Feature
+	) { 
+	
+		
+		var streamLayerView;
+		var a = 0;
+		var b = 0;
+		
+		var map = new Map({
+			//ground: "world-topobathymetry",
+            basemap: "topo-vector"
+		});
+		
+		
+		
+		var mapView = new MapView({
+			container: "viewDiv",
+			map: map,
+			zoom: 12,
+			highlightOptions: {
+				color: [255,0,0,1]
+			},
+			center: [-121.839805, 36.589768]
+		});
+		
+	
+		dictRenderer2525C = new DictionaryRenderer({
+          url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c
+          fieldMap: {
+            sidc: "sidc_2525c",
+            speed: "Speed",
+            uniquedesignation: "uniquedesignation",
+            //combateffectiveness: "operationalcondition",
+            //staffcomment: "staffcomment",
+            //higherformation: "owningunit",
+            //additionalinformation: "Description",
+            //datetimevalid: "Date",
+            //distance: "Distance",
+            //commonidentifier: "commonidentifier",
+            //datetimeexpired: "datetimeexpired",
+            //equipmentteardowntime: "equipmentteardowntime",
+            //idmode: "idmode",
+            //platformtype: "platformtype",
+            //quantity: "quantity",
+            //reinforced: "reinforced",
+            //reliability: "reliability",
+            //credibility: "credibility",
+            //sigintmobility: "",
+            //targetdesignator: "TargetDesignator",
+            //type: "type",
+            //uniquedesignation2: "",
+            //x: "X",
+            //y: "Y",
+            //z: "Z",
+            //z2: ""
+          },
+          config: {
+			frame: "ON",
+			fill: "ON",
+			icon: "ON",
+			text: "ON",
+			colors: "LIGHT",
+			condition:  "PRIMARY",
+			amplifiers: "ON"
+          }
+        });	
+		
+		dictRenderer2525C_air = new DictionaryRenderer({
+            url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c
+          fieldMap: {
+            sidc: "sidc",
+            speed: "Speed",
+            uniquedesignation: "uniquedesignation",
+            //combateffectiveness: "operationalcondition",
+            //staffcomment: "staffcomment",
+            higherformation: "owningunit",
+            //additionalinformation: "Description",
+            //datetimevalid: "Date",
+            //distance: "Distance",
+            //commonidentifier: "commonidentifier",
+            //datetimeexpired: "datetimeexpired",
+            //equipmentteardowntime: "equipmentteardowntime",
+            //idmode: "idmode",
+            //platformtype: "platformtype",
+            //quantity: "quantity",
+            //reinforced: "reinforced",
+            //reliability: "reliability",
+            //credibility: "credibility",
+            //sigintmobility: "",
+            //targetdesignator: "TargetDesignator",
+            //type: "type",
+            //uniquedesignation2: "",
+            //x: "X",
+            //y: "Y",
+            //z: "Z",
+            //z2: ""
+          },
+          config: {
+			frame: "ON",
+			fill: "ON",
+			icon: "ON",
+			text: "ON",
+			colors: "LIGHT",
+			condition:  "PRIMARY",
+			amplifiers: "ON"
+          }
+        });
+
+		var popupTemplateUnits = {
+			title: "Friendly Land Units: {uniquedesignation}",
+			content: [
+				{
+					type: "fields",
+					fieldInfos: [
+						{
+							fieldName: "owningunit",
+							label: "Higher Formation"
+						},						
+						{
+							fieldName: "staffcomment",
+							label: "Staff Commment"
+						},						
+						{
+							fieldName: "speed",
+							label: "Speed"
+						},						
+						{
+							fieldName: "status911",
+							label: "Alert"
+						},		
+						{
+							fieldName: "sidc_2525c",
+							label: "SIDC"
+						}
+					]
+				}
+			]
+		};
+
+		var popupTemplateAirUnits = {
+			title: "Friendly Air Units: {uniquedesignation}",
+			content: [
+				{
+					type: "fields",
+					fieldInfos: [
+						{
+							fieldName: "owningunit",
+							label: "Higher Formation"
+						},						
+						{
+							fieldName: "staffcomment",
+							label: "Staff Commment"
+						},						
+						{
+							fieldName: "speed",
+							label: "Speed"
+						},						
+						{
+							fieldName: "sidc_2525c",
+							label: "SIDC"
+						}
+					]
+				}
+			]
+		};
+
+        friendlyAirStreamLayer = new StreamLayer({
+//          url: "https://wdcsol000027.esri.com:6443/arcgis/rest/services/monterey-airtracks-stream-service-out/StreamServer",
+          url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_airtracks_stream-service-out/StreamServer",
+          title: "Friendly Air Tracks", 
+          outFields: ["*"],
+          // purgeOptions: {
+          //   keepLastOnly: true
+          // },
+          elevationInfo: {
+				    mode: "absolute-height"
+  				},
+          //maximumTrackPoints:1,
+		  //visible: false,
+          popupTemplate: popupTemplateAirUnits,
+          renderer: dictRenderer2525C_air
+        });
+
+
+        friendlyLandStreamLayer = new StreamLayer({
+          //url: "https://wdcsol000027.esri.com:6443/arcgis/rest/services/monterey-landtracks-stream-service-out/StreamServer",
+          url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_landtracks_stream-service-out/StreamServer",
+          title: "Friendly Land Tracks", 
+          outFields: ["*"],
+          // purgeOptions: {
+          //   keepLastOnly: true
+          // },
+          elevationInfo: {
+				    mode: "relative-to-ground",
+            featureExpressionInfo: {
+    					expression: "0",
+    				}
+  				},
+          //maximumTrackPoints:1,
+          popupTemplate: popupTemplateUnits,
+		  renderer: dictRenderer2525C
+        });
+
+
+ /*       cotStreamLayer = new StreamLayer({
+          //url: "https://zihans.esri.com:6443/arcgis/rest/services/CoTMessage/StreamServer",
+          url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
+          title: "CoT Reports", 
+          outFields: ["*"],
+          // purgeOptions: {
+          //   keepLastOnly: true
+          // },
+          elevationInfo: {
+				    mode: "on-the-ground",
+            featureExpressionInfo: {
+    					expression: "0",
+    				}
+  				},
+          //maximumTrackPoints:1,
+          renderer: dictRenderer2525C
+        });
+*/
+
+
+		map.add(friendlyLandStreamLayer);
+		map.add(friendlyAirStreamLayer);
+		//map.add(cotStreamLayer);
+
+	
+		function adjustRenderer() {
+			var adjustedDictionaryRenderer;
+			adjustedDictionaryRenderer = dictRenderer2525C.clone();
+			adjustedDictionaryRenderer.fieldMap["a"]= a++;
+			with(adjustedDictionaryRenderer.config) {
+				frame = document.getElementById("sym-frame").value;
+				fill = document.getElementById("sym-fill").value;
+				icon = document.getElementById("sym-icon").value;
+				text = document.getElementById("sym-text").value;
+				colors = document.getElementById("sym-colors").value;
+				condition = document.getElementById("sym-condition").value;
+				amplifiers = document.getElementById("sym-amplifiers").value;
+			}
+			friendlyLandStreamLayer.renderer = adjustedDictionaryRenderer;
+			
+			adjustedDictionaryRenderer_air = dictRenderer2525C_air.clone();
+			adjustedDictionaryRenderer_air.fieldMap["a"]= a++;
+			with(adjustedDictionaryRenderer_air.config) {
+				frame = document.getElementById("sym-frame").value;
+				fill = document.getElementById("sym-fill").value;
+				icon = document.getElementById("sym-icon").value;
+				text = document.getElementById("sym-text").value;
+				colors = document.getElementById("sym-colors").value;
+				condition = document.getElementById("sym-condition").value;
+				amplifiers = document.getElementById("sym-amplifiers").value;
+			}
+			
+			friendlyAirStreamLayer.renderer = adjustedDictionaryRenderer_air;
+			//cotStreamLayer.renderer = adjustedDictionaryRenderer;
+		}		
+		
+		mapView
+			.when(function() {
+				mapView.ui.add("controlDiv", "top-left");
+				mapView.ui.add(new Fullscreen({
+					view: mapView
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: new CoordinateConversion({
+						view: mapView
+					}),
+					expandIconClass: "esri-icon-applications",
+					expandTooltip: "Coordinate Converter"
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: new BasemapGallery({
+						view: mapView
+					}),
+					expandTooltip: "Basemap Gallery"
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: new LayerList({
+						view: mapView
+					}),
+					expandTooltip: "Layer List"
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: options,
+					expandIconClass: "esri-icon-settings",
+					expandTooltip: "Options"
+				}), "bottom-left");
+			}
+		);
+		
+		
+		
+		mapView.ui.add(connectionStatus, "top-right");
+		connectionStatus.style.display = "inline-flex";
+
+		mapView.whenLayerView(friendlyLandStreamLayer).then(function(layerView) {
+			streamLayerView = layerView;
+
+			if (layerView.connectionStatus === "connected") {
+			processConnect();
+			}
+
+			layerView.watch("connectionStatus", function(value) {
+				if (value === "connected") {
+					processConnect();
+				} else {
+					processDisconnect();
+				}
+				});
+			
+			//streamLayerView.effect = {
+			//	filter: {
+			//		where: "status911 = " + 1,
+			//	},
+			//	includedEffect: "invert(100%)"
+			//};
+			
+			
+			streamLayerView.on("data-received", (event) => {
+
+				if (event.attributes["status911"]===1) {
+					console.log("Alert: " + event.attributes["uniquedesignation"]);
+                    var highlightQuery = friendlyLandStreamLayer.createQuery();
+                    highlightQuery.where = "track_id='" + event.attributes["track_id"] + "'";
+                    streamLayerView.queryFeatures(highlightQuery).then(function (response) {
+						streamLayerView.highlight(response.features);
+					});
+
+				};
+			});
+			
+		});
+
+			 
+	
+		
+		document.getElementById("sym-frame").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-fill").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-icon").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-text").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-colors").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-condition").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-amplifiers").addEventListener("change", function() {
+			adjustRenderer();
+		});
+	});
+
+
+    function processConnect() {
+		  connectionStatus.style.backgroundColor = "#ffffff";
+          connectionStatus.innerHTML = "connected";
+    }
+
+    function processDisconnect() {
+          connectionStatus.style.backgroundColor = "orange";
+          connectionStatus.innerHTML = "reconnecting";
+    }	
+
+</script>
+</head>
+<body>
+	<div id="viewDiv"></div>
+	<div id="controlDiv" style="height: 32px; width: 32px;">
+	<div id="options" class="esri-widget" style="width: 300px;">
+    	<div id="connectionStatus" class="esri-widget">Disconnected</div>
+		<p>Select symbology options:</p>
+		<div>
+			<label for="sym-frame">Frame</label>
+			<select id="sym-frame">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-fill">Fill</label>
+			<select id="sym-fill">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-icon">Icon</label>
+			<select id="sym-icon">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-text">Text</label>
+			<select id="sym-text">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-colors">Colors</label>
+			<select id="sym-colors">
+				<option value="LIGHT" selected>Light</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="DARK">Dark</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-condition">Condition</label>
+			<select id="sym-condition">
+				<option value="PRIMARY" selected>Primary</option>
+				<option value="ALTERNATE">Alternate</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-amplifiers">Amplifiers</label>
+			<select id="sym-amplifiers">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+	</div>
+</body>
+</html>

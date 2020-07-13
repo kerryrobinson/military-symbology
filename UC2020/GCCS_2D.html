@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>GCCS Sim - 2D</title>
+	<style>
+		html,
+		body,
+		#viewDiv {
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			width: 100%;
+		}
+		#options {
+			padding: 1em;
+		}
+		#options > div {
+			padding: 0.4em;
+		}
+		select {
+			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+	</style>
+	<link rel="stylesheet" href="https://jsdev.arcgis.com/4.14/esri/themes/light/main.css" />
+	<script src="https://jsdev.arcgis.com/4.16/"></script>
+	<script>
+	require([
+		"esri/config",
+		"esri/portal/Portal",
+		"esri/Map",
+		"esri/views/MapView",
+		"esri/layers/FeatureLayer",
+		"esri/renderers/DictionaryRenderer",
+		"esri/widgets/Expand",
+		"esri/widgets/BasemapGallery",
+		"esri/widgets/LayerList",
+		"esri/widgets/CoordinateConversion",
+		"esri/widgets/Fullscreen",
+		"esri/widgets/Feature"
+	], function(
+		esriConfig,
+		Portal,
+		Map,
+		MapView,
+		FeatureLayer,
+		DictionaryRenderer,
+		Expand,
+		BasemapGallery,
+		LayerList,
+		CoordinateConversion,
+		Fullscreen,
+		Feature
+	) {
+			
+		// Create map and MapView
+		var map = new Map({
+           basemap: "topo-vector"
+		});
+		
+		var mapView = new MapView({
+			container: "viewDiv",
+			map: map,
+			zoom: 2,
+			//scale: 150000,
+			//center: [-121.673840,36.705617]
+			center: [-116.5893690,35.0185508] 
+		});
+		
+		// Create the Dictionary Renderer with field mapping and config properties
+		var dictionaryRenderer2525c = new DictionaryRenderer({
+			//url: "https://www.arcgis.com/sharing/rest/content/items/75b40938249848dcaa7a9f3a8fec2895", //2525d published
+			//url: "https://devtesting.mapsdevext.arcgis.com/sharing/rest/content/items/7923dac92202452ab602359c3398e077", //2525d latest
+            url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c published
+            scaleExpression:"300000/$view.scale",
+			scaleExpression: "var size = 500000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
+            fieldMap: {
+				sidc: "symbolcode",
+				//context: "context",
+				//identity: "identity_",
+				//symbolset: "symbolset",
+				status: "status",
+				//indicator: "indicator",
+				//echelon: "echelon",
+				//symbolentity: "symbolentity",
+				///modifier1: "modifier1",
+				//modifier2: "modifier2",
+				additionalinformation: "additionalinformation",
+				//combateffectiveness: "combateffectiveness",
+				//operationalcondition: "operationalcondition",
+				//datetimeexpired: "datetimeexpired",
+				//datetimevalid: "datetimevalid",
+				//higherformation: "higherFormation",
+				//idmode: "idmode",
+				//reinforced: "reinforced",
+				//reliability: "reliability",
+				//credibility: "credibility",
+				//mobility: "mobility",
+				direction: "direction",
+				speed: "speed",
+				//staffcomment: "staffComment",
+				//type: "Type",
+				uniquedesignation: "name",
+				//x: "x",
+				//y: "y",
+				z: "z",
+			},
+			config: {
+				frame: "ON",
+				fill: "ON",
+				icon: "ON",
+				text: "OFF",
+				colors: "LIGHT",
+				condition:  "PRIMARY",
+			}
+		});
+		
+		var dictionaryRenderer2525d = new DictionaryRenderer({
+			//url: "https://www.arcgis.com/sharing/rest/content/items/75b40938249848dcaa7a9f3a8fec2895", //2525d published
+			url: "https://devtesting.mapsdevext.arcgis.com/sharing/rest/content/items/7923dac92202452ab602359c3398e077", //2525d latest
+           //url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c published
+           fieldMap: {
+				sidc: "sidc_2525d",		
+				context: "context",
+				identity: "identity_",
+				symbolset: "symbolset",
+				status: "status",
+				indicator: "indicator",
+				echelon: "echelon",
+				symbolentity: "symbolentity",
+				modifier1: "modifier1",
+				modifier2: "modifier2",
+				additionalinformation: "additionalinformation",
+				combateffectiveness: "combateffectiveness",
+				operationalcondition: "operationalcondition",
+				datetimeexpired: "datetimeexpired",
+				datetimevalid: "datetimevalid",
+				higherformation: "higherFormation",
+				idmode: "idmode",
+				reinforced: "reinforced",
+				reliability: "reliability",
+				credibility: "credibility",
+				mobility: "mobility",
+				//direction: "direction",
+				speed: "speed",
+				staffcomment: "staffComment",
+				type: "Type",
+				uniquedesignation: "uniquedesignation",
+				//x: "x",
+				//y: "y",
+				z: "z",
+			},
+			config: {
+				frame: "ON",
+				fill: "ON",
+				icon: "ON",
+				text: "OFF",
+				colors: "LIGHT",
+				condition:  "PRIMARY",
+			}
+		});
+		
+		// Create Layers
+		var layerGCCSSim = new FeatureLayer({
+			title: "GCCS",
+			url: "https://wdcdefense.esri.com/server/rest/services/Hosted/gccs_sim/FeatureServer/0",
+            outFields: ["*"],
+			renderer: dictionaryRenderer2525c
+		});
+
+
+
+		map.add(layerGCCSSim);
+
+		
+		mapView
+			.when(function() {
+				mapView.ui.add("controlDiv", "top-left");
+				mapView.ui.add(new Fullscreen({
+					view: mapView
+				}), "top-left");
+			}
+		);
+		
+
+
+	});
+	</script>
+</head>
+<body>
+	<div id="viewDiv"></div>
+</body>	
+</html>
