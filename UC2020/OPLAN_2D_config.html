@@ -96,10 +96,26 @@
 				//y: "y",
 				z: "z",
 		};
+
+		var dictionaryRendererFieldMap_cm = {
+				sidc: "sidc_2525c",
+				status: "status",
+				echelon: "echelon",
+				additionalinformation: "additionalinformation",
+				combateffectiveness: "combateffectiveness",
+				operationalcondition: "operationalcondition",
+				higherformation: "higherFormation",
+				direction: "direction",
+				speed: "speed",
+				staffcomment: "staffComment",
+				type: "Type",
+				uniquedesignation: "uniquedesignation",
+				distance: "width",
+				z: "z",
+				z2: "z2"
+		};
 		
 		
-		//const scale = 36112;
-		//const scale = 1155581;
 		const scale = 577791;
 		var dictionaryRenderer2525c_scaled = new DictionaryRenderer({
 			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
@@ -128,6 +144,13 @@
 			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
 			scaleExpression: "var size = 500000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
             fieldMap: dictionaryRendererFieldMap,
+			config: dictionaryRendererConfig,
+		});
+		
+		var dictionaryRenderer2525c_cm = new DictionaryRenderer({
+			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
+			scaleExpression: "var size = 500000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
+            fieldMap: dictionaryRendererFieldMap_cm,
 			config: dictionaryRendererConfig,
 		});
 		
@@ -300,7 +323,7 @@
 			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/22",
             outFields: ["*"],
 			popupTemplate: popupTemplateCM,
-			renderer: dictionaryRenderer2525c
+			renderer: dictionaryRenderer2525c_cm
 		});
 
 		var layerControlMeasuresAreas = new FeatureLayer({
@@ -308,7 +331,7 @@
 			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/23",
             outFields: ["*"],
 			popupTemplate: popupTemplateCM,
-			renderer: dictionaryRenderer2525c
+			renderer: dictionaryRenderer2525c_cm
 		});
 
 
