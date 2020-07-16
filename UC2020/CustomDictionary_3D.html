@@ -204,7 +204,7 @@
 		map.add(layerNeutralMessages);
 		map.add(layerHostileMessages);
 
-		var spinning = false;
+		var spinning = true;
 		
 		function rotateView(angle) {
 			if ( angle < 360 && spinning ) {
@@ -273,6 +273,12 @@
 			layerNeutralMessages.renderer = adjustedDictionaryRenderer;
 			layerSelfMessages.renderer = adjustedDictionaryRenderer;
 		}
+
+
+		sceneView.whenLayerView(layerFriendlyMessages).then(function (layerView) {
+			if (spinning)
+				rotateView(sceneView.camera.heading);
+		})
 		
 		sceneView
 			.when(function() {
