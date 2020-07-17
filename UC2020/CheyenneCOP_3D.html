@@ -23,8 +23,8 @@
 			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
 		}
 	</style>
-	<link rel="stylesheet" href="https://jsdev.arcgis.com/4.14/esri/themes/light/main.css" />
-	<script src="https://jsdev.arcgis.com/4.14/"></script>
+	<link rel="stylesheet" href="https://js.arcgis.com/4.14/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.14/"></script>
 	<script>
 	var streamLayer;
 	require([
@@ -155,7 +155,7 @@
           elevationInfo: {
 			mode: "relative-to-ground",
             featureExpressionInfo: {
-    			expression: "if (($feature.platformname_1 == 'Pronto 1') || ($feature.platformname_1 == 'Bluebird 1')) {return 3000} else {return 0}",
+    			expression: "if (($feature.platformname_1 == 'Pronto 1') || ($feature.platformname_1 == 'Bluebird 1')) {return 2000} else {return 0}",
     		}
   		  },
           //maximumTrackPoints:1,
