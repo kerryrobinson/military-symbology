@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>OPLAN - 2D with Config Options</title>
+	<style>
+		html,
+		body,
+		#viewDiv {
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			width: 100%;
+		}
+		#options {
+			padding: 1em;
+		}
+		#options > div {
+			padding: 0.4em;
+		}
+		select {
+			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+	</style>
+	<link rel="stylesheet" href="https://jsdev.arcgis.com/4.16/esri/themes/light/main.css" />
+	<script src="https://jsdev.arcgis.com/4.16/"></script>
+	<script>
+	require([
+		"esri/config",
+		"esri/portal/Portal",
+		"esri/Map",
+		"esri/WebMap",
+		"esri/views/MapView",
+		"esri/layers/FeatureLayer",
+		"esri/renderers/DictionaryRenderer",
+		"esri/widgets/Expand",
+		"esri/widgets/BasemapGallery",
+		"esri/widgets/LayerList",
+		"esri/widgets/CoordinateConversion",
+		"esri/widgets/Fullscreen",
+		"esri/widgets/Feature"
+	], function(
+		esriConfig,
+		Portal,
+		Map,
+		WebMap,
+		MapView,
+		FeatureLayer,
+		DictionaryRenderer,
+		Expand,
+		BasemapGallery,
+		LayerList,
+		CoordinateConversion,
+		Fullscreen,
+		Feature
+	) {
+	
+		var a = 0; 
+
+		let webmapId = "0623129c83a341bcac096787e313ee36";
+
+		var dictionaryRendererConfig = {
+			frame: "ON",
+			fill: "ON",
+			icon: "ON",
+			text: "ON",
+			colors: "LIGHT",
+			condition:  "PRIMARY",
+			amplifiers: "ON"
+		};
+		
+		var dictionaryRendererFieldMap = {
+				sidc: "sidc_2525c",
+				//context: "context",
+				//identity: "identity_",
+				//symbolset: "symbolset",
+				status: "status",
+				//indicator: "indicator",
+				echelon: "echelon",
+				//symbolentity: "symbolentity",
+				//modifier1: "modifier1",
+				//modifier2: "modifier2",
+				additionalinformation: "additionalinformation",
+				combateffectiveness: "combateffectiveness",
+				operationalcondition: "operationalcondition",
+				//datetimeexpired: "datetimeexpired",
+				//datetimevalid: "datetimevalid",
+				higherformation: "higherFormation",
+				//idmode: "idmode",
+				//reinforced: "reinforced",
+				//reliability: "reliability",
+				//credibility: "credibility",
+				//mobility: "mobility",
+				direction: "direction",
+				speed: "speed",
+				staffcomment: "staffComment",
+				type: "Type",
+				uniquedesignation: "uniquedesignation",
+				//x: "x",
+				//y: "y",
+				z: "z",
+		};
+
+		var dictionaryRendererFieldMap_cm = {
+				sidc: "sidc_2525c",
+				status: "status",
+				echelon: "echelon",
+				additionalinformation: "additionalinformation",
+				combateffectiveness: "combateffectiveness",
+				operationalcondition: "operationalcondition",
+				higherformation: "higherFormation",
+				direction: "direction",
+				speed: "speed",
+				staffcomment: "staffComment",
+				type: "Type",
+				uniquedesignation: "uniquedesignation",
+				distance: "width",
+				z: "z",
+				z2: "z2"
+		};
+		
+		
+		const scale = 577791;
+		var dictionaryRenderer2525c_scaled = new DictionaryRenderer({
+			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
+            //scaleExpression:"200000/$view.scale",
+			//scaleExpression: "var size = 300000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
+            fieldMap: dictionaryRendererFieldMap,
+			config: dictionaryRendererConfig,
+			visualVariables: [
+              {
+                type: "size",
+                valueExpression: "$view.scale",
+                stops: [
+                  { value: scale / 2, size: 80 },
+                  { value: scale / 4, size: 60 },
+                  { value: scale * 2, size: 40 },
+                  { value: scale * 4, size: 20 },
+                  { value: scale * 8, size: 10 },
+                  { value: scale * 16, size: 5 },
+                  { value: scale * 32, size: 4 }
+                ]
+              }
+            ]
+		});
+		
+		var dictionaryRenderer2525c = new DictionaryRenderer({
+			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
+			scaleExpression: "var size = 500000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
+            fieldMap: dictionaryRendererFieldMap,
+			config: dictionaryRendererConfig,
+		});
+		
+		var dictionaryRenderer2525c_cm = new DictionaryRenderer({
+			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
+			scaleExpression: "var size = 500000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
+            fieldMap: dictionaryRendererFieldMap_cm,
+			config: dictionaryRendererConfig,
+		});
+		
+		var popupTemplateUnits = {
+			title: "[{symbolset} ({identity_})] {symbolentity}",
+			content: [
+				{
+					type: "fields",
+					fieldInfos: [
+						{
+							fieldName: "uniquedesignation",
+							label: "Unique Designation"
+						},
+						{
+							fieldName: "operationalcondition",
+							label: "Operational Condition"
+						},						
+						{
+							fieldName: "specialheadquarters",
+							label: "Special C2 Headquarters"
+						},						
+						{
+							fieldName: "higherformation",
+							label: "Higher Formation"
+						},						
+						{
+							fieldName: "additionalinformation",
+							label: "Altitude / Depth"
+						},						
+						{
+							fieldName: "direction",
+							label: "Direction of Movement"
+						},		
+						{
+							fieldName: "sidc_2525c",
+							label: "SIDC"
+						}
+					]
+				}
+			]
+		};
+		
+		var popupTemplateAir = {
+			title: "[{symbolset} ({identity_})] {symbolentity}",
+			content: [
+				{
+					type: "fields",
+					fieldInfos: [
+						{
+							fieldName: "uniquedesignation",
+							label: "Unique Designation"
+						},
+						{
+							fieldName: "operationalcondition",
+							label: "Operational Condition"
+						},						
+						{
+							fieldName: "additionalinformation",
+							label: "Altitude / Depth"
+						},						
+						{
+							fieldName: "direction",
+							label: "Direction of Movement"
+						},						
+						{
+							fieldName: "speed",
+							label: "Speed"
+						},						
+						{
+							fieldName: "sidc_2525c",
+							label: "SIDC"
+						}
+					]
+				}
+			]
+		};
+		
+		var popupTemplateActivities = {
+			title: "[{symbolset} ({identity_})] {symbolentity}",
+			content: [
+				{
+					type: "fields",
+					fieldInfos: [
+						{
+							fieldName: "uniquedesignation",
+							label: "Unique Designation"
+						},
+						{
+							fieldName: "sidc_2525c",
+							label: "SIDC"
+						}
+					]
+				}
+			]
+		};
+		
+		var popupTemplateCM = {
+			title: "Control Measure: {uniquedesignation}",
+			content: [
+				{
+					type: "fields",
+					fieldInfos: [
+						{
+							fieldName: "additionalinformation",
+							label: "Additional Information"
+						},
+						{
+							fieldName: "sidc_2525c",
+							label: "SIDC"
+						}
+					]
+				}
+			]
+		};
+		
+		// Create map and MapView
+		var map = new Map({
+           basemap: "topo-vector"
+		});
+		
+		var mapView = new MapView({
+			container: "viewDiv",
+			map: map,
+			//scale: 300000,
+			zoom: 10,
+			constraints: {
+				rotationEnabled: false
+			},
+			center: [-116.5893690,35.477]
+		});
+
+
+		// Create Layers
+		var layerUnits = new FeatureLayer({
+			title: "Land Units",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/arcgis/rest/services/Ft_Irwin_OPLAN/FeatureServer/9",
+            outFields: ["*"],
+			refreshInterval: 0.1,
+			popupTemplate: popupTemplateUnits,
+ 			renderer: dictionaryRenderer2525c
+		});
+
+		var layerActivities = new FeatureLayer({
+			title: "Activities",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/13",
+            outFields: ["*"],
+			popupTemplate: popupTemplateActivities,
+ 			renderer: dictionaryRenderer2525c
+		});
+
+		var layerAir = new FeatureLayer({
+			title: "Air",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/2",
+            outFields: ["*"],
+			popupTemplate: popupTemplateAir,
+			renderer: dictionaryRenderer2525c
+		});
+
+		var layerControlMeasuresPoints = new FeatureLayer({
+			title: "Control Measures - Points",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/21",
+            outFields: ["*"],
+			popupTemplate: popupTemplateCM,
+			renderer: dictionaryRenderer2525c
+		});
+
+		var layerControlMeasuresLines = new FeatureLayer({
+			title: "Control Measures - Lines",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/22",
+            outFields: ["*"],
+			popupTemplate: popupTemplateCM,
+			renderer: dictionaryRenderer2525c_cm
+		});
+
+		var layerControlMeasuresAreas = new FeatureLayer({
+			title: "Control Measures - Areas",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/23",
+            outFields: ["*"],
+			popupTemplate: popupTemplateCM,
+			renderer: dictionaryRenderer2525c_cm
+		});
+
+
+		map.add(layerControlMeasuresLines);
+		map.add(layerControlMeasuresAreas);
+		map.add(layerUnits);
+		map.add(layerActivities);
+		map.add(layerAir);
+		map.add(layerControlMeasuresPoints);
+
+
+		var newWebMap = new WebMap({
+			basemap: "hybrid"
+		});
+
+		var portal = new Portal({
+			authMode: "immediate"
+		});
+		
+		
+		function adjustRenderer() {
+			var adjustedDictionaryRenderer;
+			var adjustedDictionaryRenderer_la;
+			
+			adjustedDictionaryRenderer = dictionaryRenderer2525c.clone();
+			adjustedDictionaryRenderer.fieldMap["a"]= a++;
+			with(adjustedDictionaryRenderer.config) {
+				frame = document.getElementById("sym-frame").value;
+				fill = document.getElementById("sym-fill").value;
+				icon = document.getElementById("sym-icon").value;
+				text = document.getElementById("sym-text").value;
+				colors = document.getElementById("sym-colors").value;
+				condition = document.getElementById("sym-condition").value;
+				amplifiers = document.getElementById("sym-amplifiers").value;
+			}
+/*			adjustedDictionaryRenderer_scaled = dictionaryRenderer2525c_scaled.clone();
+			adjustedDictionaryRenderer_scaled.fieldMap["a"]= a++;
+			with(adjustedDictionaryRenderer_la.config) {
+				frame = document.getElementById("sym-frame").value;
+				fill = document.getElementById("sym-fill").value;
+				icon = document.getElementById("sym-icon").value;
+				text = document.getElementById("sym-text").value;
+				colors = document.getElementById("sym-colors").value;
+				condition = document.getElementById("sym-condition").value;
+				amplifiers = document.getElementById("sym-amplifiers").value;
+			}*/
+			layerControlMeasuresLines.renderer = adjustedDictionaryRenderer;
+			layerControlMeasuresAreas.renderer = adjustedDictionaryRenderer;
+			layerUnits.renderer = adjustedDictionaryRenderer;
+			layerActivities.renderer = adjustedDictionaryRenderer;
+			layerAir.renderer = adjustedDictionaryRenderer;
+			layerControlMeasuresPoints.renderer = adjustedDictionaryRenderer;
+		}
+
+
+		portal.load().then(function () {
+          // When the webmap and view resolve, display the webmap's
+          // new title in the Div
+          var title = document.getElementById("webMapTitle");
+          var save = document.getElementById("saveWebMap");
+          save.disabled = false;
+          save.addEventListener("click", function () {
+            // item automatically casts to a PortalItem instance by saveAs
+            var item = {
+              title: title.value
+            };
+
+            // Update properties of the WebMap related to the view.
+            // This should be called just before saving a webmap.
+            newWebMap.updateFrom(mapView).then(function () {
+				newWebMap
+                	.saveAs(item)
+                	// Saved successfully
+                	.then(function (item) {
+                  		// link to the newly-created web scene item
+                  		var itemPageUrl =
+                    		item.portal.url + "/home/item.html?id=" + item.id;
+                  		var link =
+                    		'<a target="_blank" href="' +
+                    		itemPageUrl +
+                    		'">' +
+                    		title.value +
+                    		"</a>";
+
+                  	statusMessage(
+                    	"Save WebMap",
+                    "	<br> Successfully saved as <i>" + link + "</i>"
+                  	);
+                	})
+                // Save didn't work correctly
+                .catch(function (error) {
+                  	statusMessage("Save WebMap", "<br> Error " + error);
+                });
+            });
+		  });
+		  
+          var overlay = document.getElementById("overlayDiv");
+          var ok = overlay.getElementsByTagName("input")[0];
+
+          function statusMessage(head, info) {
+            document.getElementById("head").innerHTML = head;
+            document.getElementById("info").innerHTML = info;
+            overlay.style.visibility = "visible";
+          }
+
+          ok.addEventListener("click", function () {
+            overlay.style.visibility = "hidden";
+          });
+
+      });
+		
+		
+		mapView
+			.when(function() {
+				mapView.ui.add(new Fullscreen({
+					view: mapView
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: new CoordinateConversion({
+						view: mapView
+					}),
+					expandIconClass: "esri-icon-applications",
+					expandTooltip: "(Coordinates)"
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: new BasemapGallery({
+						view: mapView
+					}),
+					expandTooltip: "(Basemap Gallery)"
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: new LayerList({
+						view: mapView
+					}),
+					expandTooltip: "(Layer List)"
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: options,
+					expandIconClass: "esri-icon-settings",
+					expandTooltip: "Options"
+				}), "bottom-left");
+				mapView.ui.add("sidebarDiv", "top-right");
+			}
+		);
+		
+				
+		document.getElementById("sym-frame").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-fill").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-icon").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-text").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-colors").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-condition").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-amplifiers").addEventListener("change", function() {
+			adjustRenderer();
+		});
+	});
+	</script>
+</head>
+<body>
+	<div id="viewDiv"></div>
+
+	<div id="options" class="esri-widget" style="width: 300px;">
+		<p>Select symbology options:</p>
+		<div>
+			<label for="sym-frame">Frame</label>
+			<select id="sym-frame">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-fill">Fill</label>
+			<select id="sym-fill">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-icon">Icon</label>
+			<select id="sym-icon">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-text">Text</label>
+			<select id="sym-text">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-colors">Colors</label>
+			<select id="sym-colors">
+				<option value="LIGHT" selected>Light</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="DARK">Dark</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-condition">Condition</label>
+			<select id="sym-condition">
+				<option value="PRIMARY" selected>Primary</option>
+				<option value="ALTERNATE">Alternate</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-amplifiers">Amplifiers</label>
+			<select id="sym-amplifiers">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+	</div>
+	<div id="sidebarDiv" class="esri-widget">
+		<h4 class="esri-heading">Save WebMap</h4>
+		<label class="esri-feature-form__label">Title</label>
+		<input
+		  id="webMapTitle"
+		  type="text"
+		  class="esri-input"
+		  value="WebMap
+		  Title1"
+		/><br /><br />
+		<input
+		  id="saveWebMap"
+		  type="button"
+		  value="Save"
+		  disabled
+		  class="esri-button"
+		/>
+	  </div>
+	  <div id="overlayDiv" class="esri-widget">
+		<h4 class="esri-heading" id="head"></h4>
+		<label id="info"></label><br /><br />
+		<input type="button" value="OK" class="esri-button" />
+	  </div>
+  
+</body>
+</html>
