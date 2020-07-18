@@ -221,16 +221,12 @@
 		};
 
         friendlyAirStreamLayer = new StreamLayer({
-//          url: "https://wdcsol000027.esri.com:6443/arcgis/rest/services/monterey-airtracks-stream-service-out/StreamServer",
           url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_airtracks_stream-service-out/StreamServer",
           title: "Friendly Air Tracks", 
           outFields: ["*"],
           // purgeOptions: {
           //   keepLastOnly: true
           // },
-          elevationInfo: {
-				    mode: "absolute-height"
-  				},
           //maximumTrackPoints:1,
 		  //visible: false,
           popupTemplate: popupTemplateAirUnits,
@@ -239,39 +235,25 @@
 
 
         friendlyLandStreamLayer = new StreamLayer({
-          //url: "https://wdcsol000027.esri.com:6443/arcgis/rest/services/monterey-landtracks-stream-service-out/StreamServer",
           url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_landtracks_stream-service-out/StreamServer",
           title: "Friendly Land Tracks", 
           outFields: ["*"],
           // purgeOptions: {
           //   keepLastOnly: true
           // },
-          elevationInfo: {
-				    mode: "relative-to-ground",
-            featureExpressionInfo: {
-    					expression: "0",
-    				}
-  				},
-          //maximumTrackPoints:1,
+           //maximumTrackPoints:1,
           popupTemplate: popupTemplateUnits,
 		  renderer: dictRenderer2525C
         });
 
 
  /*       cotStreamLayer = new StreamLayer({
-          //url: "https://zihans.esri.com:6443/arcgis/rest/services/CoTMessage/StreamServer",
           url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
           title: "CoT Reports", 
           outFields: ["*"],
           // purgeOptions: {
           //   keepLastOnly: true
           // },
-          elevationInfo: {
-				    mode: "on-the-ground",
-            featureExpressionInfo: {
-    					expression: "0",
-    				}
-  				},
           //maximumTrackPoints:1,
           renderer: dictRenderer2525C
         });
