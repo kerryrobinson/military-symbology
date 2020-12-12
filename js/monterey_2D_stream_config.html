@@ -23,8 +23,8 @@
 			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
 		}
 	</style>
-	<link rel="stylesheet" href="https://jsdev.arcgis.com/4.16/esri/themes/light/main.css" />
-	<script src="https://jsdev.arcgis.com/4.16/"></script>
+	<link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.16/"></script>
 	<script>
 	var streamLayer;
 	require([
@@ -239,7 +239,6 @@
 
 
         friendlyLandStreamLayer = new StreamLayer({
-          //url: "https://wdcsol000027.esri.com:6443/arcgis/rest/services/monterey-landtracks-stream-service-out/StreamServer",
           url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_landtracks_stream-service-out/StreamServer",
           title: "Friendly Land Tracks", 
           outFields: ["*"],
@@ -259,8 +258,7 @@
 
 
  /*       cotStreamLayer = new StreamLayer({
-          //url: "https://zihans.esri.com:6443/arcgis/rest/services/CoTMessage/StreamServer",
-          url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
+           url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
           title: "CoT Reports", 
           outFields: ["*"],
           // purgeOptions: {

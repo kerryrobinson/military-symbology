@@ -23,8 +23,8 @@
 			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
 		}
 	</style>
-	<link rel="stylesheet" href="https://jsdev.arcgis.com/4.16/esri/themes/light/main.css" />
-	<script src="https://jsdev.arcgis.com/4.16/"></script>
+	<link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.18/"></script>
 	<script>
 	require([
 		"esri/config",
@@ -282,7 +282,6 @@
 			center: [-116.5893690,35.477]
 		});
 
-		
 
 		// Create Layers
 		var layerUnits = new FeatureLayer({
@@ -343,8 +342,6 @@
 		map.add(layerControlMeasuresPoints);
 
 
-		
-		
 		function adjustRenderer() {
 			var adjustedDictionaryRenderer;
 			var adjustedDictionaryRenderer_la;
@@ -378,7 +375,7 @@
 			layerAir.renderer = adjustedDictionaryRenderer;
 			layerControlMeasuresPoints.renderer = adjustedDictionaryRenderer;
 		}
-		
+
 		mapView
 			.when(function() {
 				mapView.ui.add(new Fullscreen({
