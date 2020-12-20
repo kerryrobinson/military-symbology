@@ -19,18 +19,45 @@
 		#options > div {
 			padding: 0.4em;
 		}
+		#sidebarDiv {
+        	width: 240px;
+        	padding: 10px;
+        	height: 200px;
+      	}	
+
+      	#overlayDiv {
+			z-index: 1;
+			position: absolute;
+			margin: auto auto;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			width: 280px;
+			height: 180px;
+			padding: 10px;
+			background-color: white;
+			border: 1px solid grey;
+			visibility: hidden;
+      	}
+
+      	input[type="text"] {
+        	width: 100%;
+     	}
+
 		select {
 			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
 		}
 	</style>
-	<link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css" />
-	<script src="https://js.arcgis.com/4.16/"></script>
+	<link rel="stylesheet" href="https://jsdev.arcgis.com/4.16/esri/themes/light/main.css" />
+	<script src="https://jsdev.arcgis.com/4.16/"></script>
 	<script>
 	var streamLayer;
 	require([
 		"esri/config",
 		"esri/portal/Portal",
 		"esri/Map",
+		"esri/WebMap",
 		"esri/views/MapView",
 		"esri/layers/FeatureLayer",
         "esri/layers/StreamLayer",
@@ -45,6 +72,7 @@
 		esriConfig,
 		Portal,
 		Map,
+		WebMap,
 		MapView,
 		FeatureLayer,
         StreamLayer,
@@ -63,7 +91,7 @@
 		var b = 0;
 		
 		var map = new Map({
-           basemap: "topo-vector"
+            basemap: "topo-vector"
 		});
 		
 		
@@ -220,51 +248,71 @@
 		};
 
         friendlyAirStreamLayer = new StreamLayer({
-		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_airtracks_stream-service-out/StreamServer",
+          url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_airtracks_stream-service-out/StreamServer",
           title: "Friendly Air Tracks", 
           outFields: ["*"],
+          // purgeOptions: {
+          //   keepLastOnly: true
+          // },
           elevationInfo: {
 				    mode: "absolute-height"
   				},
-           popupTemplate: popupTemplateAirUnits,
+          //maximumTrackPoints:1,
+		  //visible: false,
+          popupTemplate: popupTemplateAirUnits,
           renderer: dictRenderer2525C_air
         });
 
 
         friendlyLandStreamLayer = new StreamLayer({
-		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_landtracks_stream-service-out/StreamServer",
+          url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_landtracks_stream-service-out/StreamServer",
           title: "Friendly Land Tracks", 
           outFields: ["*"],
-           elevationInfo: {
-				    mode: "relative-to-ground",
-            featureExpressionInfo: {
-    					expression: "0",
-    				}
-  				},
-          popupTemplate: popupTemplateUnits,
-		  renderer: dictRenderer2525C
+          //elevationInfo: {
+		//		    mode: "relative-to-ground",
+         //   featureExpressionInfo: {
+    	//				expression: "0",
+    //				}
+  //				},
+          //maximumTrackPoints:1,
+          popupTemplate: popupTemplateUnits
+		  //renderer: dictRenderer2525C
         });
 
+
         cotStreamLayer = new StreamLayer({
-		   url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
+          url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
           title: "CoT Reports", 
           outFields: ["*"],
-           elevationInfo: {
+          // purgeOptions: {
+          //   keepLastOnly: true
+          // },
+          elevationInfo: {
 				    mode: "on-the-ground",
             featureExpressionInfo: {
     					expression: "0",
     				}
   				},
+          //maximumTrackPoints:1,
           renderer: dictRenderer2525C
         });
 
 
 
 		map.add(friendlyLandStreamLayer);
-		map.add(friendlyAirStreamLayer);
+		//map.add(friendlyAirStreamLayer);
 		//map.add(cotStreamLayer);
 
-	
+		// Create a new empty web map to save to
+		var newWebMap = new WebMap({
+			basemap: "hybrid"
+		});
+
+		// force the authentication prompt
+		var portal = new Portal({
+			authMode: "immediate"
+		});
+
 		function adjustRenderer() {
 			var adjustedDictionaryRenderer;
 			adjustedDictionaryRenderer = dictRenderer2525C.clone();
@@ -292,10 +340,76 @@
 				amplifiers = document.getElementById("sym-amplifiers").value;
 			}
 			
-			friendlyAirStreamLayer.renderer = adjustedDictionaryRenderer_air;
+			//friendlyAirStreamLayer.renderer = adjustedDictionaryRenderer_air;
 			//cotStreamLayer.renderer = adjustedDictionaryRenderer;
 		}		
+
+
+		portal.load().then(function () {
+          // When the webmap and view resolve, display the webmap's
+          // new title in the Div
+          var title = document.getElementById("webMapTitle");
+          var save = document.getElementById("saveWebMap");
+          save.disabled = false;
+          save.addEventListener("click", function () {
+            // item automatically casts to a PortalItem instance by saveAs
+            var item = {
+              title: title.value
+            };
+
+            // Update properties of the WebMap related to the view.
+            // This should be called just before saving a webmap.
+            newWebMap.updateFrom(mapView).then(function () {
+				//load the layers into the web map
+				newWebMap.addMany(mapView.map.layers);
+				console.log(newWebMap);
+				newWebMap.saveAs(item)
+               		// Saved successfully
+                	.then(function (item) {
+						console.log(item);
+                  		// link to the newly-created web scene item
+                  		var itemPageUrl =
+                    		item.portal.url + "/home/item.html?id=" + item.id;
+                  		var link =
+                    		'<a target="_blank" href="' +
+                    		itemPageUrl +
+                    		'">' +
+                    		title.value +
+							"</a>";
+
+                  		statusMessage(
+                    		"Save WebMap",
+                    		"	<br> Successfully saved as <i>" + link + "</i>"
+						);
+						  
+						//re-add the layers to the mapView
+						map.add(friendlyLandStreamLayer);
+						//map.add(friendlyAirStreamLayer);
+
+                	})
+                // Save didn't work correctly
+                .catch(function (error) {
+                  	statusMessage("Save WebMap", "<br> Error " + error);
+                });
+            });
+		  });
+		  
+          var overlay = document.getElementById("overlayDiv");
+          var ok = overlay.getElementsByTagName("input")[0];
+
+          function statusMessage(head, info) {
+            document.getElementById("head").innerHTML = head;
+            document.getElementById("info").innerHTML = info;
+            overlay.style.visibility = "visible";
+          }
+
+          ok.addEventListener("click", function () {
+            overlay.style.visibility = "hidden";
+          });
+
+      });
 		
+			
 		mapView
 			.when(function() {
 				mapView.ui.add("controlDiv", "top-left");
@@ -330,6 +444,7 @@
 					expandIconClass: "esri-icon-settings",
 					expandTooltip: "Options"
 				}), "bottom-left");
+				mapView.ui.add("sidebarDiv", "bottom-right");
 			}
 		);
 		
@@ -478,5 +593,28 @@
 			</select>
 		</div>
 	</div>
+	<div id="sidebarDiv" class="esri-widget">
+		<h4 class="esri-heading">Save WebMap</h4>
+		<label class="esri-feature-form__label">Title</label>
+		<input
+		  id="webMapTitle"
+		  type="text"
+		  class="esri-input"
+		  value="WebMapTitle1"
+		/><br /><br />
+		<input
+		  id="saveWebMap"
+		  type="button"
+		  value="Save"
+		  disabled
+		  class="esri-button"
+		/>
+	  </div>
+	  <div id="overlayDiv" class="esri-widget">
+		<h4 class="esri-heading" id="head"></h4>
+		<label id="info"></label><br /><br />
+		<input type="button" value="OK" class="esri-button" />
+	  </div>
+
 </body>
 </html>

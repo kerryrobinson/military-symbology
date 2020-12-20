@@ -238,16 +238,12 @@
 		};
 
         friendlyAirStreamLayer = new StreamLayer({
-          url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_airtracks_stream-service-out/StreamServer",
+ 		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_airtracks_stream-service-out/StreamServer",
           title: "Friendly Air Tracks", 
           outFields: ["*"],
-          // purgeOptions: {
-          //   keepLastOnly: true
-          // },
           elevationInfo: {
 				    mode: "absolute-height"
   				},
-          //maximumTrackPoints:1,
           popupTemplate: popupTemplateAirUnits,
 		  visible: false, 
 		  renderer: dictRenderer2525C_air
@@ -255,31 +251,24 @@
 
 
         friendlyLandStreamLayer = new StreamLayer({
-          url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_landtracks_stream-service-out/StreamServer",
+ 		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_landtracks_stream-service-out/StreamServer",
           title: "Friendly Land Tracks", 
           outFields: ["*"],
-          // purgeOptions: {
-          //   keepLastOnly: true
-          // },
           elevationInfo: {
 				    mode: "relative-to-ground",
             featureExpressionInfo: {
     					expression: "0",
     				}
   				},
-          //maximumTrackPoints:1,
-          popupTemplate: popupTemplateUnits,
+           popupTemplate: popupTemplateUnits,
 		  renderer: dictRenderer2525C
         });
 
 
         cotStreamLayer = new StreamLayer({
-          url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
+ 		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
           title: "CoT Reports", 
           outFields: ["*"],
-          // purgeOptions: {
-          //   keepLastOnly: true
-          // },
           elevationInfo: {
 				    mode: "on-the-ground",
             featureExpressionInfo: {
