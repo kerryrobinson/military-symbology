@@ -10,4 +10,4 @@ Examples showing military symbology support in ArcGIS
 [COP 2D (Monterey)](https://kerryrobinson.github.io/military-symbology/js/monterey_2D_stream_config.html): An example of using the Dictionary Renderer to symbolize stream services from ArcGIS GeoEvent Server in 2D using MIL-STD-2525C.  
 [COP 3D (Cheyenne)](https://kerryrobinson.github.io/military-symbology/js/CheyenneCOP_3D.html): Another example of using the Dictionary Renderer to symbolize stream services from ArcGIS GeoEvent Server in 2D using MIL-STD-2525C.    
 [Custom Symbols](https://kerryrobinson.github.io/military-symbology/js/CustomDictionary_3D.html): An example of displaying the same data using either the MIL-STD-2525C symbol standard or a custom symbol set based on MIL-STD-2525C.   
-
+[Save Web Map](https://kerryrobinson.github.io/military-symbology/js/OPLAN_2D_savemap.html): An example of saving the map as a web map, so it can be viewed in other web apps
