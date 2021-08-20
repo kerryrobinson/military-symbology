@@ -1,0 +1,1 @@
+{"type":"CIMLineSymbol","symbolLayers":[{"type":"CIMSolidStroke","effects":[{"type":"CIMGeometricEffectWave","amplitude":20,"period":10,"seed":1,"waveform":"Sinus"},{"type":"CIMGeometricEffectOffset","method":"Square","offset":-6,"option":"Fast"}],"enable":true,"capStyle":"Round","joinStyle":"Round","lineStyle3D":"Strip","miterLimit":10,"width":2,"color":[0,0,0,255]}]}

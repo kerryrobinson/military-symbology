@@ -1,0 +1,1 @@
+{"type":"CIMPolygonSymbol","symbolLayers":[{"type":"CIMSolidStroke","enable":true,"capStyle":"Round","joinStyle":"Bevel","lineStyle3D":"Strip","miterLimit":10,"width":2,"color":[205,160,140,255]},{"type":"CIMSolidFill","enable":true,"color":[254,245,241,255]}]}

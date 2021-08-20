@@ -1,0 +1,1 @@
+{"type":"CIMPolygonSymbol","symbolLayers":[{"type":"CIMSolidStroke","effects":[{"type":"CIMGeometricEffectCut","primitiveName":"echelon_cut","beginCut":0,"endCut":0}],"enable":true,"primitiveName":"cm_color","capStyle":"Round","joinStyle":"Round","lineStyle3D":"Strip","miterLimit":10,"width":2,"color":[0,0,0,255]}]}
