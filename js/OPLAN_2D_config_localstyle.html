@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>OPLAN - 2D using local style</title>
+	<style>
+		html,
+		body,
+		#viewDiv {
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			width: 100%;
+		}
+		#options {
+			padding: 1em;
+		}
+		#options > div {
+			padding: 0.4em;
+		}
+		select {
+			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+	</style>
+	<link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.20/"></script>
+	<script>
+	require([
+		"esri/config",
+		"esri/portal/Portal",
+		"esri/Map",
+		"esri/views/MapView",
+		"esri/layers/FeatureLayer",
+		"esri/renderers/DictionaryRenderer",
+		"esri/widgets/Expand",
+		"esri/widgets/BasemapGallery",
+		"esri/widgets/LayerList",
+		"esri/widgets/CoordinateConversion",
+		"esri/widgets/Fullscreen",
+		"esri/widgets/Feature"
+	], function(
+		esriConfig,
+		Portal,
+		Map,
+		MapView,
+		FeatureLayer,
+		DictionaryRenderer,
+		Expand,
+		BasemapGallery,
+		LayerList,
+		CoordinateConversion,
+		Fullscreen,
+		Feature
+	) {
+	
+		var dictionaryRendererConfig = {
+			frame: "ON",
+			fill: "ON",
+			icon: "ON",
+			text: "ON",
+			colors: "LIGHT",
+			condition:  "PRIMARY",
+			amplifiers: "OFF"
+		};
+		
+		var dictionaryRendererFieldMap = {
+				sidc: "sidc_2525d",
+				//context: "context",
+				//identity: "identity_",
+				//symbolset: "symbolset",
+				status: "status",
+				//indicator: "indicator",
+				//echelon: "echelon",
+				//symbolentity: "symbolentity",
+				///modifier1: "modifier1",
+				//modifier2: "modifier2",
+				additionalinformation: "additionalinformation",
+				//combateffectiveness: "combateffectiveness",
+				//operationalcondition: "operationalcondition",
+				//datetimeexpired: "datetimeexpired",
+				//datetimevalid: "datetimevalid",
+				//higherformation: "higherFormation",
+				//idmode: "idmode",
+				//reinforced: "reinforced",
+				//reliability: "reliability",
+				//credibility: "credibility",
+				//mobility: "mobility",
+				direction: "direction",
+				//speed: "speed",
+				//staffcomment: "staffComment",
+				//type: "Type",
+				uniquedesignation: "uniquedesignation",
+				//x: "x",
+				//y: "y",
+				z: "z",
+		};
+		
+		
+		var dictionaryRenderer2525d = new DictionaryRenderer({
+            url: "https://kerryrobinson.github.io/military-symbology/webstyles/mil-std-2525d", //local 2525d web style
+		    fieldMap: dictionaryRendererFieldMap,
+			config: dictionaryRendererConfig
+		});
+		
+		var popupTemplateUnits = {
+			title: "[{symbolset} ({identity_})] {symbolentity}",
+			content: [
+				{
+					type: "fields",
+					fieldInfos: [
+						{
+							fieldName: "uniquedesignation",
+							label: "Unique Designation"
+						},
+						{
+							fieldName: "operationalcondition",
+							label: "Operational Condition"
+						},						
+						{
+							fieldName: "specialheadquarters",
+							label: "Special C2 Headquarters"
+						},						
+						{
+							fieldName: "higherformation",
+							label: "Higher Formation"
+						},						
+						{
+							fieldName: "additionalinformation",
+							label: "Altitude / Depth"
+						},						
+						{
+							fieldName: "direction",
+							label: "Direction of Movement"
+						},		
+						{
+							fieldName: "sidc_2525d",
+							label: "SIDC"
+						}
+					]
+				}
+			]
+		};
+		
+		var popupTemplateAir = {
+			title: "[{symbolset} ({identity_})] {symbolentity}",
+			content: [
+				{
+					type: "fields",
+					fieldInfos: [
+						{
+							fieldName: "uniquedesignation",
+							label: "Unique Designation"
+						},
+						{
+							fieldName: "operationalcondition",
+							label: "Operational Condition"
+						},						
+						{
+							fieldName: "additionalinformation",
+							label: "Altitude / Depth"
+						},						
+						{
+							fieldName: "direction",
+							label: "Direction of Movement"
+						},						
+						{
+							fieldName: "speed",
+							label: "Speed"
+						},						
+						{
+							fieldName: "sidc_2525d",
+							label: "SIDC"
+						}
+					]
+				}
+			]
+		};
+		
+		var popupTemplateActivities = {
+			title: "[{symbolset} ({identity_})] {symbolentity}",
+			content: [
+				{
+					type: "fields",
+					fieldInfos: [
+						{
+							fieldName: "uniquedesignation",
+							label: "Unique Designation"
+						},
+						{
+							fieldName: "sidc_2525d",
+							label: "SIDC"
+						}
+					]
+				}
+			]
+		};
+		
+	
+		
+		var map = new Map({
+            basemap: "topo-vector"
+		});
+		
+		
+		var mapView = new MapView({
+			container: "viewDiv",
+			map: map,
+			qualityProfile: "high",
+            zoom: 10,
+			center: [-116.5893690,35.477]
+		});
+		
+	
+
+		// Create Layers
+		var layerUnits = new FeatureLayer({
+			title: "Land Units",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/arcgis/rest/services/Ft_Irwin_OPLAN/FeatureServer/9",
+            outFields: ["*"],
+            elevationInfo: {
+				    mode: "relative-to-ground",
+            featureExpressionInfo: {
+    					expression: "0",
+    				}
+  				},
+			popupTemplate: popupTemplateUnits,
+			renderer: dictionaryRenderer2525d
+		});
+
+		var layerActivities = new FeatureLayer({
+			title: "Activities",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/13",
+            outFields: ["*"],
+            elevationInfo: {
+				    mode: "on-the-ground",
+            featureExpressionInfo: {
+    					expression: "0",
+    			}
+  			},
+			popupTemplate: popupTemplateActivities,
+			renderer: dictionaryRenderer2525d
+		});
+
+		var layerAir = new FeatureLayer({
+			title: "Air",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/2",
+            outFields: ["*"],
+            elevationInfo: {
+				    mode: "absolute-height"
+  				},
+			popupTemplate: popupTemplateAir,
+			renderer: dictionaryRenderer2525d
+		});
+
+
+		map.add(layerUnits);
+		map.add(layerActivities);
+		map.add(layerAir);
+
+
+		var spinning = false;
+		
+	
+		
+		function adjustRenderer() {
+			var adjustedDictionaryRenderer;
+			adjustedDictionaryRenderer = dictionaryRenderer2525d.clone();
+			with(adjustedDictionaryRenderer.config) {
+				frame = document.getElementById("sym-frame").value;
+				fill = document.getElementById("sym-fill").value;
+				icon = document.getElementById("sym-icon").value;
+				text = document.getElementById("sym-text").value;
+				colors = document.getElementById("sym-colors").value;
+				condition = document.getElementById("sym-condition").value;
+				amplifiers = document.getElementById("sym-amplifiers").value;
+			}
+			layerUnits.renderer = adjustedDictionaryRenderer;
+			layerActivities.renderer = adjustedDictionaryRenderer;
+			layerAir.renderer = adjustedDictionaryRenderer;
+		}
+		
+		mapView
+			.when(function() {
+				mapView.ui.add(new Fullscreen({
+					view: mapView
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: new CoordinateConversion({
+						view: mapView
+					}),
+					expandIconClass: "esri-icon-applications",
+					expandTooltip: "(Coordinates)"
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: new BasemapGallery({
+						view: mapView
+					}),
+					expandTooltip: "(Basemap Gallery)"
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: new LayerList({
+						view: mapView
+					}),
+					expandTooltip: "(Layer List)"
+				}), "top-left");
+				mapView.ui.add(new Expand({
+					view: mapView,
+					content: options,
+					expandIconClass: "esri-icon-settings",
+					expandTooltip: "Options"
+				}), "bottom-left");
+			}
+		);
+		
+
+		document.getElementById("sym-frame").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-fill").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-icon").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-text").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-colors").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-condition").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-amplifiers").addEventListener("change", function() {
+			adjustRenderer();
+		});
+	});
+	</script>
+</head>
+<body>
+	<div id="viewDiv"></div>
+
+    <div id="options" class="esri-widget" style="width: 300px;">
+		<p>Select symbology options:</p>
+<		<div>
+			<label for="sym-frame">Frame</label>
+			<select id="sym-frame">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-fill">Fill</label>
+			<select id="sym-fill">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-icon">Icon</label>
+			<select id="sym-icon">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-text">Text</label>
+			<select id="sym-text">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-colors">Colors</label>
+			<select id="sym-colors">
+				<option value="LIGHT" selected>Light</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="DARK">Dark</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-condition">Condition</label>
+			<select id="sym-condition">
+				<option value="PRIMARY" selected>Primary</option>
+				<option value="ALTERNATE">Alternate</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-amplifiers">Amplifiers</label>
+			<select id="sym-amplifiers">
+				<option value="ON" >On</option>
+				<option value="OFF"selected>Off</option>
+			</select>
+		</div>
+	</div>
+</body>
+</html>
