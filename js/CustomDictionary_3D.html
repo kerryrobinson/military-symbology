@@ -154,7 +154,7 @@
 				}
 			},
 			refreshInterval: 0.1,
-			renderer: dictionaryRenderer2525c
+			renderer: dictionaryRendererJGSDF
 		});
 
 		var layerHostileMessages = new FeatureLayer({
@@ -168,7 +168,7 @@
 				}
 			},
 			refreshInterval: 0.1,
-			renderer: dictionaryRenderer2525c
+			renderer: dictionaryRendererJGSDF
 		});
 
 		var layerNeutralMessages = new FeatureLayer({
@@ -182,7 +182,7 @@
 				}
 			},
 			refreshInterval: 0.1,
-			renderer: dictionaryRenderer2525c
+			renderer: dictionaryRendererJGSDF
 		});
 
 		var layerSelfMessages = new FeatureLayer({
@@ -196,7 +196,7 @@
 				}
 			},
 			refreshInterval: 0.1,
-			renderer: dictionaryRenderer2525c
+			renderer: dictionaryRendererJGSDF
 		});
 
 		map.add(layerFriendlyMessages);
@@ -204,7 +204,7 @@
 		map.add(layerNeutralMessages);
 		map.add(layerHostileMessages);
 
-		var spinning = true;
+		var spinning = false;
 		
 		function rotateView(angle) {
 			if ( angle < 360 && spinning ) {
@@ -385,7 +385,7 @@
 			<label for="sym-frame">Frame</label>
 			<select id="sym-frame">
 				<option value="ON" selected>On</option>
-				<option value="OFF">Off</option>
+				<option value="OFF" selected>Off</option>
 			</select>
 		</div>
 		<div>

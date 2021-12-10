@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>Custom Dictionary Switcher - 3D</title>
+	<style>
+		html,
+		body,
+		#viewDiv {
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			width: 100%;
+		}
+		#options {
+			padding: 1em;
+		}
+		#options > div {
+			padding: 0.4em;
+		}
+		select {
+			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+	</style>
+	<link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.22/"></script>
+	<script>
+	require([
+		"esri/config",
+		"esri/portal/Portal",
+		"esri/Map",
+		"esri/views/MapView",
+		"esri/layers/FeatureLayer",
+		"esri/renderers/DictionaryRenderer",
+		"esri/widgets/Expand",
+		"esri/widgets/BasemapGallery",
+		"esri/widgets/LayerList",
+		"esri/widgets/CoordinateConversion",
+		"esri/widgets/Fullscreen",
+		"esri/widgets/Feature"
+	], function(
+		esriConfig,
+		Portal,
+		Map,
+		MapView,
+		FeatureLayer,
+		DictionaryRenderer,
+		Expand,
+		BasemapGallery,
+		LayerList,
+		CoordinateConversion,
+		Fullscreen,
+		Feature
+	) {
+	
+		var dictionaryRendererConfig = {
+			frame: "ON",
+			fill: "ON",
+			icon: "ON",
+			text: "ON",
+			colors: "LIGHT",
+			condition:  "PRIMARY",
+			amplifiers: "ON"
+		};
+		
+		var dictionaryRendererFieldMap = {
+				sidc: "sidc",
+				additionalinformation:"additionalinformation",
+				combateffectiveness:"combateffectiveness",
+				commonidentifier:"commonidentifier",
+				datetimeexpired:"datetimeexpired",
+				datetimevalid:"datetimevalid",
+				distance:"distance",
+				equipmentteardowntime:"equipmentteardowntime",
+				higherformation:"higherformation",
+				idmode:"idmode",
+				platformtype:"PlatformType",
+				quantity:"quantity",
+				reinforced:"reinforced",
+				reliability:"reliability",
+				credibility:"credibility",
+				sigintmobility:"",
+				speed:"speed",
+				staffcomment:"staffcomment",
+				targetdesignator:"TargetDesignator",
+				type:"type",
+				uniquedesignation:"platformname_1",
+				uniquedesignation2:"",
+				x:"x",
+				y:"y",
+				z:"",
+				z2:"",
+				label1:"",
+				label2:"",
+				label3:"",
+				label4:""
+		};
+		
+	
+		
+		var map = new Map({
+			ground: "world-topobathymetry",
+            basemap: "gray-vector"
+		});
+		
+	
+		var MapView = new MapView({
+			container: "viewDiv",
+			map: map,
+			qualityProfile: "high",
+			environment: {
+				lighting: {
+					directShadowsEnabled: true,
+					ambientOcclusionEnabled: true
+				},
+				atmosphere: {
+					quality: "high"
+				}
+			},
+			zoom: 10,
+			center: [-121.839805, 36.589768],
+			// camera: {
+			// 	position: {
+			// 		x: -121.818397,
+			// 		y: 36.297737,
+			// 		z: 4500
+			// 	},
+			// 	heading: 0,
+			// 	tilt: 75
+			// }
+		});
+		
+		var dictionaryRenderer2525c = new DictionaryRenderer({
+			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
+            fieldMap: dictionaryRendererFieldMap,
+			config: dictionaryRendererConfig
+		});
+		
+		var dictionaryRendererJGSDF = new DictionaryRenderer({
+			url:"https://www.arcgis.com/sharing/rest/content/items/0d6615ad869944cc8a81698d5536c726",
+            fieldMap: dictionaryRendererFieldMap,
+			config: dictionaryRendererConfig
+		});
+		
+
+		
+		var layerFriendlyMessages = new FeatureLayer({
+			title: "Friendly",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Tracks/FeatureServer/4",
+            outFields: ["*"],
+			elevationInfo: {
+				mode: "relative-to-ground",
+				featureExpressionInfo: {
+					expression: "100",
+				}
+			},
+			refreshInterval: 0.1,
+			renderer: dictionaryRendererJGSDF
+		});
+
+		var layerHostileMessages = new FeatureLayer({
+			title: "Hostile",
+			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Tracks/FeatureServer/3",
+            outFields: ["*"],
+			elevationInfo: {
+				mode: "relative-to-ground",
+				featureExpressionInfo: {
+					expression: "100",
+				}
+			},
+			refreshInterval: 0.1,
+			renderer: dictionaryRendererJGSDF
+		});
+
+		var layerNeutralMessages = new FeatureLayer({
+			title: "Neutral",
+		    url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Tracks/FeatureServer/2",
+            outFields: ["*"],
+			elevationInfo: {
+				mode: "relative-to-ground",
+				featureExpressionInfo: {
+					expression: "100",
+				}
+			},
+			refreshInterval: 0.1,
+			renderer: dictionaryRendererJGSDF
+		});
+
+		var layerSelfMessages = new FeatureLayer({
+			title: "Self",
+            url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Tracks/FeatureServer/1",
+			outFields: ["*"],
+			elevationInfo: {
+				mode: "relative-to-ground",
+				featureExpressionInfo: {
+					expression: "100",
+				}
+			},
+			refreshInterval: 0.1,
+			renderer: dictionaryRendererJGSDF
+		});
+
+		map.add(layerFriendlyMessages);
+		map.add(layerSelfMessages);
+		map.add(layerNeutralMessages);
+		map.add(layerHostileMessages);
+
+		var spinning = false;
+		
+		function rotateView(angle) {
+			if ( angle < 360 && spinning ) {
+				MapView.goTo(
+					{
+						position: {
+							x: -121.818397-((Math.sin((angle/180)*Math.PI))/5),
+							y: 36.297737+((1-Math.cos((angle/180)*Math.PI))/5),
+							z: 4500,
+							spatialReference: {
+								wkid: 4326
+							}
+						},
+						heading: angle,
+						tilt: 75
+					},
+					{
+						speedFactor: 0.2,
+						easing: "linear"
+					}
+				);
+				window.setTimeout(function() {
+					rotateView((angle+5) % 360);
+				}, 2000);
+			}
+		}
+		
+		function refreshSymbols(txtStandard) {
+			switch(txtStandard) {
+				case "mil-std-2525c":
+					layerFriendlyMessages.renderer = dictionaryRenderer2525c;
+					layerHostileMessages.renderer = dictionaryRenderer2525c;
+					layerNeutralMessages.renderer = dictionaryRenderer2525c;
+					layerSelfMessages.renderer = dictionaryRenderer2525c;
+					break;
+				case "fic-jgsdf":
+					layerFriendlyMessages.renderer = dictionaryRendererJGSDF;
+					layerHostileMessages.renderer = dictionaryRendererJGSDF;
+					layerNeutralMessages.renderer = dictionaryRendererJGSDF;
+					layerSelfMessages.renderer = dictionaryRendererJGSDF;
+					break;
+			}
+		}
+		
+		function adjustRenderer() {
+			var adjustedDictionaryRenderer;
+			switch(document.getElementById("sym-std").value) {
+				case "mil-std-2525c":
+					adjustedDictionaryRenderer = dictionaryRenderer2525c.clone();
+					break;
+				case "fic-jgsdf":
+					adjustedDictionaryRenderer = dictionaryRendererJGSDF.clone();
+					break;
+			}
+			with(adjustedDictionaryRenderer.config) {
+				frame = document.getElementById("sym-frame").value;
+				fill = document.getElementById("sym-fill").value;
+				icon = document.getElementById("sym-icon").value;
+				text = document.getElementById("sym-text").value;
+				colors = document.getElementById("sym-colors").value;
+				condition = document.getElementById("sym-condition").value;
+				amplifiers = document.getElementById("sym-amplifiers").value;
+			}
+			layerFriendlyMessages.renderer = adjustedDictionaryRenderer;
+			layerHostileMessages.renderer = adjustedDictionaryRenderer;
+			layerNeutralMessages.renderer = adjustedDictionaryRenderer;
+			layerSelfMessages.renderer = adjustedDictionaryRenderer;
+		}
+
+
+		MapView.whenLayerView(layerFriendlyMessages).then(function (layerView) {
+			if (spinning)
+				rotateView(MapView.camera.heading);
+		})
+		
+		MapView
+			.when(function() {
+				MapView.ui.add("controlDiv", "top-left");
+				MapView.ui.add(new Fullscreen({
+					view: MapView
+				}), "top-left");
+				MapView.ui.add(new Expand({
+					view: MapView,
+					content: new CoordinateConversion({
+						view: MapView
+					}),
+					expandIconClass: "esri-icon-applications",
+					expandTooltip: "(Coordinates)"
+				}), "top-left");
+				MapView.ui.add(new Expand({
+					view: MapView,
+					content: new BasemapGallery({
+						view: MapView
+					}),
+					expandTooltip: "(Basemap Gallery)"
+				}), "top-left");
+				MapView.ui.add(new Expand({
+					view: MapView,
+					content: new LayerList({
+						view: MapView
+					}),
+					expandTooltip: "(Layer List)"
+				}), "top-left");
+				MapView.ui.add(new Expand({
+					view: MapView,
+					content: options,
+					expandIconClass: "esri-icon-settings",
+					expandTooltip: "Options"
+				}), "bottom-left");
+			}
+		);
+		
+		document.getElementById("spin-btn").addEventListener("click", function() {
+			switch(spinning) {
+				case false:
+					spinning = true;
+					rotateView(MapView.camera.heading);
+					break;
+				case true:
+					spinning = false;
+					break;
+			}
+		});
+		
+		document.getElementById("sym-std").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-frame").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-fill").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-icon").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-text").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-colors").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-condition").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-amplifiers").addEventListener("change", function() {
+			adjustRenderer();
+		});
+	});
+	</script>
+</head>
+<body>
+	<div id="viewDiv"></div>
+	<div id="controlDiv" style="height: 32px; width: 32px;">
+		<input class="esri-component esri-widget--button esri-widget esri-interactive"
+			style="border: none; box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px; font-family: 'CalciteWebCoreIcons';"
+			type="button"
+			id="spin-btn"
+			value="&#xe66e;"
+		/></div>
+	<div id="options" class="esri-widget" style="width: 300px;">
+		<p>Select symbology options:</p>
+		<div>
+			<label for="sym-std">Standard</label>
+			<select id="sym-std">
+				<option value="mil-std-2525c">MIL-STD-2525c</option>
+				<option value="fic-jgsdf" selected>Custom 2525C</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-frame">Frame</label>
+			<select id="sym-frame">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-fill">Fill</label>
+			<select id="sym-fill">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-icon">Icon</label>
+			<select id="sym-icon">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-text">Text</label>
+			<select id="sym-text">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-colors">Colors</label>
+			<select id="sym-colors">
+				<option value="LIGHT" selected>Light</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="DARK">Dark</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-condition">Condition</label>
+			<select id="sym-condition">
+				<option value="PRIMARY" selected>Primary</option>
+				<option value="ALTERNATE">Alternate</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-amplifiers">Amplifiers</label>
+			<select id="sym-amplifiers">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+	</div>
+</body>
+</html>
