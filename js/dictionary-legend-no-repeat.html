@@ -1,0 +1,168 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>
+      Query features from a FeatureLayerView | Sample | ArcGIS API for
+      JavaScript 4.24
+    </title>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.23/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.23/"></script>
+
+    <script>
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/symbols/support/symbolUtils"
+      ], function (Map, MapView, FeatureLayer, symbolUtils) {
+        const map = new Map({
+          basemap: "gray-vector"
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [-73.95, 40.702],
+          zoom: 12,
+          padding: {
+            right: 300
+          }
+        });
+
+        const listNode = document.getElementById("symbol-container");
+
+        const featureLayer = new FeatureLayer({
+          portalItem: {
+            id: "0e93e8b73c3247f281ddac72e850eb32"
+          }
+        });
+        map.add(featureLayer);
+
+        let graphics;
+        // use the layerview to access only features available in the view
+        view.whenLayerView(featureLayer).then(function (layerView) {
+          // zoom to layer extent
+          view.goTo(featureLayer.fullExtent);
+          layerView.watch("updating", function (value) {
+            if (!value) {
+              // wait for the layer view to finish updating
+              // query all the features available for drawing.
+              layerView
+                .queryFeatures({
+                  geometry: view.extent,
+                })
+                .then(function (results) {
+                  listNode.innerHTML = "";
+                  let symbolsList = [];
+                  graphics = results.features;
+                  
+                  graphics.forEach(function(graphic, index) {
+                    symbolUtils.getDisplayedSymbol(graphic).then((cim)=>{
+                        for (let index=0; index < cim.data.symbol.symbolLayers.length; index++) {
+                            // remove any CIMTextSymbol layers since they will not be able to display attributes in the symbol preview
+                            if (cim.data.symbol.symbolLayers[index].markerGraphics[0].symbol.type == "CIMTextSymbol"){
+                                cim.data.symbol.symbolLayers.splice(index,1)
+                                index--;
+                            }                        
+                        }
+                        // add first symbol to the list and render the preview, this will not be a repeat
+                        if (symbolsList.length == 0) {
+                          symbolsList.push(cim);
+                          symbolUtils.renderPreviewHTML(cim).then((element) => { 
+                                element.classList.add("symbolPadding")
+                                listNode.appendChild(element)
+                            })
+                        }
+                        repeat = false;
+                        // for each symbol, check if it is a repeat of the symbol already in the list
+                        symbolsList.forEach((symbol, i)=>{
+                          if (JSON.stringify(symbol) === JSON.stringify(cim)){
+                            repeat = true;
+                          }
+                          // if it is not a repeat, add it to the list and render the preview
+                          if (i == symbolsList.length-1 && !repeat){
+                            symbolsList.push(cim);
+                            symbolUtils.renderPreviewHTML(cim).then((element) => { 
+                                element.classList.add("symbolPadding")
+                                listNode.appendChild(element)
+                            });
+                          }
+                        });
+                    });
+                  });
+                })
+                .catch(function (error) {
+                  console.error("query failed: ", error);
+                });
+            }
+          });
+        });
+      });
+    </script>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .panel-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .panel-side {
+        padding: 2px;
+        box-sizing: border-box;
+        width: 300px;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: rgb(0, 0, 0);
+        background-color: rgba(255, 255, 255, 0.6);
+        overflow: auto;
+        z-index: 60;
+      }
+
+      .panel-side h3 {
+        padding: 0 20px;
+        margin: 20px 0;
+      }
+
+      .panel-side div {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .symbolPadding {
+          margin: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="panel-container">
+      <div class="panel-side esri-widget">
+        <h3>Symbols</h3>
+        <div id="symbol-container">
+          <span>Loading&hellip;</span>
+        </div>
+      </div>
+      <div id="viewDiv"></div>
+    </div>
+  </body>
+</html>
