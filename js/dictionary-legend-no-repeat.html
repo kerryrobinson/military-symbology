@@ -42,7 +42,8 @@
         const featureLayer = new FeatureLayer({
           portalItem: {
             id: "0e93e8b73c3247f281ddac72e850eb32"
-          }
+          },
+          layerId: 9
         });
         map.add(featureLayer);
 
@@ -67,7 +68,8 @@
                   graphics.forEach(function(graphic, index) {
                     symbolUtils.getDisplayedSymbol(graphic).then((cim)=>{
                         for (let index=0; index < cim.data.symbol.symbolLayers.length; index++) {
-                            // remove any CIMTextSymbol layers since they will not be able to display attributes in the symbol preview
+                          //console.log(JSON.stringify(cim ));
+                          // remove any CIMTextSymbol layers since they will not be able to display attributes in the symbol preview
                             if (cim.data.symbol.symbolLayers[index].markerGraphics[0].symbol.type == "CIMTextSymbol"){
                                 cim.data.symbol.symbolLayers.splice(index,1)
                                 index--;
