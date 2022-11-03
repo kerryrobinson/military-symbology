@@ -1,0 +1,168 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>IPB Viewer</title>
+
+    <style>
+      html,
+      body,
+
+      #text {
+        color: white;
+        margin: 0;
+        text-align: center;
+        vertical-align: middle;
+        background: rgba(80, 163, 231, 1);
+     }
+
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        bottom: 0;
+        height: 90%;
+        width: 100%;
+      }
+
+      .esri-editor .esri-item-list__scroller {
+        max-height: 350px;
+      }
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.24/esri/themes/light/main.css"
+    />
+
+    <script src="https://jsdev.arcgis.com/4.25/"></script>
+
+    <script>
+      require([
+            "esri/views/MapView", 
+            "esri/WebMap",
+            "esri/portal/Portal",
+            "esri/widgets/BasemapGallery",
+            "esri/widgets/Expand",
+            "esri/widgets/Editor",
+            "esri/widgets/Bookmarks",
+            "esri/widgets/Legend",
+            "esri/widgets/LayerList",
+            "esri/widgets/CoordinateConversion"
+        ], function (
+            MapView,
+            WebMap,
+            Portal,
+            BasemapGallery,
+            Expand,
+            Editor,
+            Bookmarks,
+            Legend,
+            LayerList,
+            CoordinateConversion
+        ) {
+        /************************************************************
+         * Creates a new WebMap instance. A WebMap must reference
+         * a PortalItem ID that represents a WebMap saved to
+         * arcgis.com or an on-premise portal.
+         *
+         * To load a WebMap from an on-premise portal, set the portal
+         * url with esriConfig.portalUrl.
+         ************************************************************/
+        const webmap = new WebMap({
+          portalItem: {
+            // autocasts as new PortalItem()
+            id: "66aa222b3385441e87e0e016800c09ed" // Monterey IPB - Web
+            //id: "7786bed152fa4d148182bc5981ad2483"   // Monterey IPB - Web Light
+          }
+        });
+
+        /************************************************************
+         * Set the WebMap instance to the map property in a MapView.
+         ************************************************************/
+        const view = new MapView({
+          map: webmap,
+          container: "viewDiv"
+        });
+
+        /************************************************************
+         * Setup the Legend widget
+         ************************************************************/
+        
+        /************************************************************
+         * Setup the LayerList widget
+         ************************************************************/
+         view.when(() => {
+            const legend = new Legend({
+                view: view,
+                style: "classic"
+            });
+            view.ui.add(new Expand({ view, content: legend }), "top-left");
+        
+            const layerList = new LayerList({
+                view: view,
+            });
+            
+            //view.ui.add( layerList, "top-left");
+            view.ui.add(new Expand({ view, content: layerList }), "top-left");
+        });
+ 
+        /************************************************************
+         * Setup the Basemap widget
+         ************************************************************/
+         const bgExpand = new Expand ({
+             view,
+             content: new BasemapGallery({ view: view }),
+             expandIconClass: "esri-icon-basemap"
+         });
+         view.ui.add(bgExpand, "top-right");
+
+        /************************************************************
+         * Setup the Bookmarks widget
+         ************************************************************/
+         const bookmarks = new Bookmarks({
+          view: view,
+          // allows bookmarks to be added, edited, or deleted
+          editingEnabled: true,
+          visibleElements: {
+            time: false // don't show the time (h:m:s) next to the date
+          }
+        });
+
+        const bkExpand = new Expand({
+            view,
+            content: bookmarks,
+            expandIconClass: "esri-icon-bookmark"
+        });
+        view.ui.add(bkExpand, "top-right");
+      
+ 
+        /************************************************************
+         * Setup the Editor widget
+         ************************************************************/
+         const editExpand = new Expand({
+             view,
+             content: new Editor({ view: view }),
+             expandIconClass: "esri-icon-edit"
+         });
+         view.ui.add(editExpand, "top-right");
+         
+        /************************************************************
+         * Setup the CoordinateConversion widget
+         ************************************************************/
+         const ccWidget = new CoordinateConversion({
+             view: view,
+         });
+         view.ui.add(ccWidget, "bottom-left");
+         
+      });
+ </script>
+  </head>
+
+  <body>
+    <h1 id="text"> IPB Viewer </h1>
+    <div id="viewDiv"></div>
+  </body>
+</html>
