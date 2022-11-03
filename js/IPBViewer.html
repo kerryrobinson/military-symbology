@@ -9,12 +9,21 @@
 
     <style>
       html,
-      body,
+      body {
+        display:flex;
+        margin:0;
+        width:100%;
+      }
+
+      #flex {
+        width: 100%;
+      }
 
       #text {
         color: white;
         margin: 0;
         text-align: center;
+        width: 100%;
         vertical-align: middle;
         background: rgba(80, 163, 231, 1);
      }
@@ -75,7 +84,7 @@
           portalItem: {
             // autocasts as new PortalItem()
             id: "66aa222b3385441e87e0e016800c09ed" // Monterey IPB - Web
-            //id: "7786bed152fa4d148182bc5981ad2483"   // Monterey IPB - Web Light
+          //id: "7786bed152fa4d148182bc5981ad2483"   // Monterey IPB - Web Light
           }
         });
 
@@ -162,10 +171,9 @@
   </head>
 
   <body>
-    <div>
+    <div id="flex">
       <div><h1 id="text"> IPB Viewer </h1></div>
       <div id="viewDiv"></div>
-  </div>      
-
+    </div>
   </body>
 </html>
