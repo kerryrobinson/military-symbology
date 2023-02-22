@@ -24,7 +24,7 @@
 		}
 	</style>
 	<link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css" />
-	<script src="https://js.arcgis.com/4.22/"></script>
+	<script src="https://js.arcgis.com/4.24/"></script>
 	<script>
 	require([
 		"esri/config",
@@ -150,7 +150,7 @@
 			elevationInfo: {
 				mode: "relative-to-ground",
 				featureExpressionInfo: {
-					expression: "100",
+					expression: "0",
 				}
 			},
 			refreshInterval: 0.1,
@@ -164,7 +164,7 @@
 			elevationInfo: {
 				mode: "relative-to-ground",
 				featureExpressionInfo: {
-					expression: "100",
+					expression: "0",
 				}
 			},
 			refreshInterval: 0.1,
@@ -178,7 +178,7 @@
 			elevationInfo: {
 				mode: "relative-to-ground",
 				featureExpressionInfo: {
-					expression: "100",
+					expression: "0",
 				}
 			},
 			refreshInterval: 0.1,
@@ -192,7 +192,7 @@
 			elevationInfo: {
 				mode: "relative-to-ground",
 				featureExpressionInfo: {
-					expression: "100",
+					expression: "0",
 				}
 			},
 			refreshInterval: 0.1,
@@ -377,15 +377,15 @@
 		<div>
 			<label for="sym-std">Standard</label>
 			<select id="sym-std">
-				<option value="mil-std-2525c" selected>MIL-STD-2525c</option>
-				<option value="fic-jgsdf">Custom 2525C</option>
+				<option value="mil-std-2525c">MIL-STD-2525c</option>
+				<option value="fic-jgsdf" selected>Custom 2525C</option>
 			</select>
 		</div>
 		<div>
 			<label for="sym-frame">Frame</label>
 			<select id="sym-frame">
 				<option value="ON" selected>On</option>
-				<option value="OFF" selected>Off</option>
+				<option value="OFF">Off</option>
 			</select>
 		</div>
 		<div>
