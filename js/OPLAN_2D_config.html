@@ -23,8 +23,8 @@
 			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
 		}
 	</style>
-	<link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
-	<script src="https://js.arcgis.com/4.22/"></script>
+	<link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.26/"></script>
 	<script>
 	require([
 		"esri/config",
@@ -55,6 +55,7 @@
 	) {
 	
 		var a = 0; 
+
 		var dictionaryRendererConfig = {
 			frame: "ON",
 			fill: "ON",
@@ -67,93 +68,30 @@
 		
 		var dictionaryRendererFieldMap = {
 				sidc: "sidc_2525c",
-				//context: "context",
-				//identity: "identity_",
-				//symbolset: "symbolset",
 				status: "status",
-				//indicator: "indicator",
 				echelon: "echelon",
-				//symbolentity: "symbolentity",
-				//modifier1: "modifier1",
-				//modifier2: "modifier2",
 				additionalinformation: "additionalinformation",
 				combateffectiveness: "combateffectiveness",
 				operationalcondition: "operationalcondition",
-				//datetimeexpired: "datetimeexpired",
-				//datetimevalid: "datetimevalid",
 				higherformation: "higherFormation",
-				//idmode: "idmode",
-				//reinforced: "reinforced",
-				//reliability: "reliability",
-				//credibility: "credibility",
-				//mobility: "mobility",
 				direction: "direction",
 				speed: "speed",
 				staffcomment: "staffComment",
 				type: "Type",
 				uniquedesignation: "uniquedesignation",
-				//x: "x",
-				//y: "y",
 				z: "z",
 		};
 
-		var dictionaryRendererFieldMap_cm = {
-				sidc: "sidc_2525c",
-				status: "status",
-				echelon: "echelon",
-				additionalinformation: "additionalinformation",
-				combateffectiveness: "combateffectiveness",
-				operationalcondition: "operationalcondition",
-				higherformation: "higherFormation",
-				direction: "direction",
-				speed: "speed",
-				staffcomment: "staffComment",
-				type: "Type",
-				uniquedesignation: "uniquedesignation",
-				distance: "width",
-				z: "z",
-				z2: "z2"
-		};
-		
-		
-		const scale = 577791;
-		var dictionaryRenderer2525c_scaled = new DictionaryRenderer({
-			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
-            //scaleExpression:"200000/$view.scale",
-			//scaleExpression: "var size = 300000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
-            fieldMap: dictionaryRendererFieldMap,
-			config: dictionaryRendererConfig,
-			visualVariables: [
-              {
-                type: "size",
-                valueExpression: "$view.scale",
-                stops: [
-                  { value: scale / 2, size: 80 },
-                  { value: scale / 4, size: 60 },
-                  { value: scale * 2, size: 40 },
-                  { value: scale * 4, size: 20 },
-                  { value: scale * 8, size: 10 },
-                  { value: scale * 16, size: 5 },
-                  { value: scale * 32, size: 4 }
-                ]
-              }
-            ]
-		});
-		
+		// create dictionary renderer that uses the field map and config properties
 		var dictionaryRenderer2525c = new DictionaryRenderer({
-			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
-			scaleExpression: "var size = 500000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
+			url: "https://www.arcgis.com/sharing/rest/content/items/2dae1ae78e604d9a9924caaff771b1e6", //2525C Living Atlas
+			//scaleExpression: "var size = 500000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
             fieldMap: dictionaryRendererFieldMap,
 			config: dictionaryRendererConfig,
 		});
+
 		
-		var dictionaryRenderer2525c_cm = new DictionaryRenderer({
-			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1",
-			scaleExpression: "var size = 500000/$view.scale; if(size<0.5){return 0.5} else if(size>3){return 3;} else {return size}",
-            fieldMap: dictionaryRendererFieldMap_cm,
-			config: dictionaryRendererConfig,
-		});
-		
+		// create popup templates - only display the most important information
 		var popupTemplateUnits = {
 			title: "[{symbolset} ({identity_})] {symbolentity}",
 			content: [
@@ -268,13 +206,12 @@
 		
 		// Create map and MapView
 		var map = new Map({
-           basemap: "topo-vector"
+           basemap: "satellite"
 		});
 		
 		var mapView = new MapView({
 			container: "viewDiv",
 			map: map,
-			//scale: 300000,
 			zoom: 10,
 			constraints: {
 				rotationEnabled: false
@@ -288,7 +225,6 @@
 			title: "Land Units",
 			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/arcgis/rest/services/Ft_Irwin_OPLAN/FeatureServer/9",
             outFields: ["*"],
-			refreshInterval: 0.1,
 			popupTemplate: popupTemplateUnits,
  			renderer: dictionaryRenderer2525c
 		});
@@ -322,7 +258,7 @@
 			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/22",
             outFields: ["*"],
 			popupTemplate: popupTemplateCM,
-			renderer: dictionaryRenderer2525c_cm
+			renderer: dictionaryRenderer2525c
 		});
 
 		var layerControlMeasuresAreas = new FeatureLayer({
@@ -330,10 +266,10 @@
 			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/23",
             outFields: ["*"],
 			popupTemplate: popupTemplateCM,
-			renderer: dictionaryRenderer2525c_cm
+			renderer: dictionaryRenderer2525c
 		});
 
-
+		//Add them to the map
 		map.add(layerControlMeasuresLines);
 		map.add(layerControlMeasuresAreas);
 		map.add(layerUnits);
@@ -342,6 +278,7 @@
 		map.add(layerControlMeasuresPoints);
 
 
+		// Apply any changes to the renderer based on the config properties set
 		function adjustRenderer() {
 			var adjustedDictionaryRenderer;
 			var adjustedDictionaryRenderer_la;
@@ -357,17 +294,6 @@
 				condition = document.getElementById("sym-condition").value;
 				amplifiers = document.getElementById("sym-amplifiers").value;
 			}
-/*			adjustedDictionaryRenderer_scaled = dictionaryRenderer2525c_scaled.clone();
-			adjustedDictionaryRenderer_scaled.fieldMap["a"]= a++;
-			with(adjustedDictionaryRenderer_la.config) {
-				frame = document.getElementById("sym-frame").value;
-				fill = document.getElementById("sym-fill").value;
-				icon = document.getElementById("sym-icon").value;
-				text = document.getElementById("sym-text").value;
-				colors = document.getElementById("sym-colors").value;
-				condition = document.getElementById("sym-condition").value;
-				amplifiers = document.getElementById("sym-amplifiers").value;
-			}*/
 			layerControlMeasuresLines.renderer = adjustedDictionaryRenderer;
 			layerControlMeasuresAreas.renderer = adjustedDictionaryRenderer;
 			layerUnits.renderer = adjustedDictionaryRenderer;
