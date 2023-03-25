@@ -23,8 +23,8 @@
 			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
 		}
 	</style>
-	<link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css" />
-	<script src="https://js.arcgis.com/4.16/"></script>
+	<link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+	<script src="https://js.arcgis.com/4.26/"></script>
 	<script>
 	var streamLayer;
 	require([
@@ -40,7 +40,9 @@
 		"esri/widgets/LayerList",
 		"esri/widgets/CoordinateConversion",
 		"esri/widgets/Fullscreen",
-		"esri/widgets/Feature"
+		"esri/widgets/Feature",
+		"esri/layers/support/FeatureEffect",
+		"esri/layers/support/FeatureFilter"
 	], function(
 		esriConfig,
 		Portal,
@@ -54,7 +56,9 @@
 		LayerList,
 		CoordinateConversion,
 		Fullscreen,
-		Feature
+		Feature,
+		FeatureEffect,
+		FeatureFilter
 	) { 
 	
 		
@@ -96,89 +100,66 @@
 			}
 		});
 		
-	
+		// setup dictionary renderer for land units based on 2525c style
 		dictRenderer2525C = new DictionaryRenderer({
             url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c
-          fieldMap: {
-            sidc: "sidc_2525c",
-            speed: "Speed",
-            uniquedesignation: "uniquedesignation",
-            //combateffectiveness: "operationalcondition",
-            //staffcomment: "staffcomment",
-            //higherformation: "owningunit",
-            //additionalinformation: "Description",
-            //datetimevalid: "Date",
-            //distance: "Distance",
-            //commonidentifier: "commonidentifier",
-            //datetimeexpired: "datetimeexpired",
-            //equipmentteardowntime: "equipmentteardowntime",
-            //idmode: "idmode",
-            //platformtype: "platformtype",
-            //quantity: "quantity",
-            //reinforced: "reinforced",
-            //reliability: "reliability",
-            //credibility: "credibility",
-            //sigintmobility: "",
-            //targetdesignator: "TargetDesignator",
-            //type: "type",
-            //uniquedesignation2: "",
-            //x: "X",
-            //y: "Y",
-            //z: "Z",
-            //z2: ""
-          },
-          config: {
-			frame: "ON",
-			fill: "ON",
-			icon: "ON",
-			text: "ON",
-			colors: "LIGHT",
-			condition:  "PRIMARY",
-			amplifiers: "ON"
-          }
+			fieldMap: {   //only map the symbol ID, speed and unique designation
+            	sidc: "sidc_2525c",
+            	speed: "Speed",
+           	 	uniquedesignation: "uniquedesignation"
+          	},
+          	config: {  
+				frame: "ON",
+				fill: "ON",
+				icon: "ON",
+				text: "ON",
+				colors: "LIGHT",
+				condition:  "PRIMARY",
+				amplifiers: "ON"
+          	}
         });
 
-		dictRenderer2525C_air = new DictionaryRenderer({
+		// setup dictionary renderer for CoT (cursor on target) events based on 2525c style
+		// this is similar to the renderer configured for land units, with a few small differences
+		dictRenderer2525C_cot = new DictionaryRenderer({
             url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c
-          fieldMap: {
-            sidc: "sidc",
-            speed: "Speed",
-            uniquedesignation: "uniquedesignation",
-            //combateffectiveness: "operationalcondition",
-            //staffcomment: "staffcomment",
-            //higherformation: "owningunit",
-            //additionalinformation: "Description",
-            //datetimevalid: "Date",
-            //distance: "Distance",
-            //commonidentifier: "commonidentifier",
-            //datetimeexpired: "datetimeexpired",
-            //equipmentteardowntime: "equipmentteardowntime",
-            //idmode: "idmode",
-            //platformtype: "platformtype",
-            //quantity: "quantity",
-            //reinforced: "reinforced",
-            //reliability: "reliability",
-            //credibility: "credibility",
-            //sigintmobility: "",
-            //targetdesignator: "TargetDesignator",
-            //type: "type",
-            //uniquedesignation2: "",
-            //x: "X",
-            //y: "Y",
-            //z: "Z",
-            //z2: ""
-          },
-          config: {
-			frame: "ON",
-			fill: "ON",
-			icon: "ON",
-			text: "ON",
-			colors: "LIGHT",
-			condition:  "PRIMARY",
-			amplifiers: "ON"
-          }
+            scaleExpression:"0.8",	//scale the symbols to be a little smaller than land units
+			fieldMap: {				//the only field that needs to be mapped is the symbol ID code
+            	sidc: "sidc_2525c"
+          	},
+          	config: {
+				frame: "ON",
+				fill: "ON",
+				icon: "ON",
+				text: "ON",
+				colors: "LIGHT",
+				condition:  "PRIMARY",
+				amplifiers: "ON"
+          	}
         });
 
+		// setup dictionary renderer for air tracks, based on 2525c style
+		// also similar to the renderer configured for land units, but with a few small differences
+		dictRenderer2525C_air = new DictionaryRenderer({
+			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c
+    		scaleExpression:"1.25",	// set a scale expression so it appears a little larger than land units
+         	fieldMap: {				// only need to map the symbol ID code, speed and unique designation
+            	sidc: "sidc",
+            	speed: "Speed",
+            	uniquedesignation: "uniquedesignation"
+          	},
+          	config: {
+				frame: "ON",
+				fill: "ON",
+				icon: "ON",
+				text: "ON",
+				colors: "LIGHT",
+				condition:  "PRIMARY",
+				amplifiers: "ON"
+          	}
+        });
+
+		// setup the popup template to only display a few of the attributes
 		var popupTemplateUnits = {
 			title: "Friendly Land Units: {uniquedesignation}",
 			content: [
@@ -210,6 +191,7 @@
 			]
 		};
 
+		// setup the popup template for air tracks
 		var popupTemplateAirUnits = {
 			title: "Friendly Air Units: {uniquedesignation}",
 			content: [
@@ -221,15 +203,11 @@
 							label: "Higher Formation"
 						},						
 						{
-							fieldName: "staffcomment",
-							label: "Staff Commment"
-						},						
-						{
 							fieldName: "speed",
 							label: "Speed"
 						},						
 						{
-							fieldName: "sidc_2525c",
+							fieldName: "sidc",
 							label: "SIDC"
 						}
 					]
@@ -237,57 +215,57 @@
 			]
 		};
 
-        friendlyAirStreamLayer = new StreamLayer({
- 		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_airtracks_stream-service-out/StreamServer",
-          title: "Friendly Air Tracks", 
-          outFields: ["*"],
-          elevationInfo: {
-				    mode: "absolute-height"
-  				},
-          popupTemplate: popupTemplateAirUnits,
-		  visible: false, 
-		  renderer: dictRenderer2525C_air
-        });
-
-
+		// configure the Land Units stream layer
         friendlyLandStreamLayer = new StreamLayer({
  		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_landtracks_stream-service-out/StreamServer",
           title: "Friendly Land Tracks", 
           outFields: ["*"],
           elevationInfo: {
-				    mode: "relative-to-ground",
-            featureExpressionInfo: {
-    					expression: "0",
-    				}
-  				},
-           popupTemplate: popupTemplateUnits,
+			mode: "relative-to-ground"  // if the data doesn't have a Z-value and `relative-to-ground` is used for placement, a leader line is applied
+  		  },
+          popupTemplate: popupTemplateUnits,
 		  renderer: dictRenderer2525C
         });
 
+		// configure the Air Tracks stream layer
+        friendlyAirStreamLayer = new StreamLayer({
+ 		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_airtracks_stream-service-out/StreamServer",
+          title: "Friendly Air Tracks", 
+          outFields: ["*"],
+          elevationInfo: {
+				mode: "absolute-height",	// air tracks have a z-value, so we want to use absolute-height
+				offset: 300					// but we add an offset so that it appears at a higher altitude than the land units which have leader lines
+  		  },
+          popupTemplate: popupTemplateAirUnits,
+ 		  renderer: dictRenderer2525C_air	// remember to use the specific dictionary renderer configured for air tracks
+        });
 
+		// configure the CoT (cursor on target) stream layer
         cotStreamLayer = new StreamLayer({
  		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
           title: "CoT Reports", 
           outFields: ["*"],
           elevationInfo: {
-				    mode: "on-the-ground",
-            featureExpressionInfo: {
-    					expression: "0",
-    				}
-  				},
-          //maximumTrackPoints:1,
-          renderer: dictRenderer2525C
+			//mode: "relative-to-ground",	// this data does have a Z value, so `relative-to-ground` will place it relative to the surface using the z value and no leader line
+			mode: "on-the-ground",	// drape the symbols on the ground
+            featureExpressionInfo: {	// however I don't want to use the data's z-value, so I can set an expression for it to be zero
+    			expression: "0",
+    		},
+			offset: 15					// and then set an offset so that the billboarded symbol appears fully above ground
+  		  },
+          renderer: dictRenderer2525C_cot
         });
 
 
-
+		// add the 3 layers to the map
 		map.add(friendlyLandStreamLayer);
 		map.add(friendlyAirStreamLayer);
-		//map.add(cotStreamLayer);
+		map.add(cotStreamLayer);
 
+		// this is a widget that calls rotateView to spin the scene on an axis
 		var spinning = false;
 		
-		 function rotateView(angle) {
+		function rotateView(angle) {
 		 	if ( angle < 360 && spinning ) {
 		 		sceneView.goTo(
 		 			{
@@ -313,7 +291,7 @@
 		 	}
 		 }
 		
-	
+		// this is a function called by the Options tool to change configuration settings for the dictionary renderer
 		function adjustRenderer() {
 			var adjustedDictionaryRenderer;
 			adjustedDictionaryRenderer = dictRenderer2525C.clone();
@@ -326,18 +304,19 @@
 				condition = document.getElementById("sym-condition").value;
 				amplifiers = document.getElementById("sym-amplifiers").value;
 			}
-			friendlyLandStreamLayer.renderer = adjustedDictionaryRenderer;
-			friendlyAirStreamLayer.renderer = adjustedDictionaryRenderer;
+			friendlyLandStreamLayer.renderer = adjustedDictionaryRenderer; //we only do this for the land units, to show the difference
+			//friendlyAirStreamLayer.renderer = adjustedDictionaryRenderer;
 			//cotStreamLayer.renderer = adjustedDictionaryRenderer;
 		}		
 		
+		// configure the scene view and add tools
 		sceneView
 			.when(function() {
-				sceneView.ui.add("controlDiv", "top-left");
+				sceneView.ui.add("controlDiv", "top-left");	// scene view
 				sceneView.ui.add(new Fullscreen({
 					view: sceneView
 				}), "top-left");
-				sceneView.ui.add(new Expand({
+				sceneView.ui.add(new Expand({				// Coordinate Conversion
 					view: sceneView,
 					content: new CoordinateConversion({
 						view: sceneView
@@ -345,21 +324,21 @@
 					expandIconClass: "esri-icon-applications",
 					expandTooltip: "Coordinate Converter"
 				}), "top-left");
-				sceneView.ui.add(new Expand({
+				sceneView.ui.add(new Expand({				// Basemap Gallery
 					view: sceneView,
 					content: new BasemapGallery({
 						view: sceneView
 					}),
 					expandTooltip: "Basemap Gallery"
 				}), "top-left");
-				sceneView.ui.add(new Expand({
+				sceneView.ui.add(new Expand({				// Layer List
 					view: sceneView,
 					content: new LayerList({
 						view: sceneView
 					}),
 					expandTooltip: "Layer List"
 				}), "top-left");
-				sceneView.ui.add(new Expand({
+				sceneView.ui.add(new Expand({				// Dictionary Renderer symbology configuration options
 					view: sceneView,
 					content: options,
 					expandIconClass: "esri-icon-settings",
@@ -381,6 +360,7 @@
 			}
 		});
 		
+		// show connection status to the land units stream service
 		sceneView.ui.add(connectionStatus, "top-right");
 		connectionStatus.style.display = "inline-flex";
 
@@ -399,32 +379,19 @@
 				}
 			});
 			
+			const highlightQuery = friendlyLandStreamLayer.createQuery();
+
+			// monitor the land units stream for a status911 change to highlight any alerted units
 			streamLayerView.on("data-received", (event) => {
 				if (event.attributes["status911"] === 1) {
 					console.log("Alert: " + event.attributes["uniquedesignation"]);
-				}
 
-					const filteredItem = streamLayerView.loadedGraphics.items.filter(
-					  (item) => item.attributes["status911"] === 1);
-					filteredItem ? streamLayerView.highlight(filteredItem) : null;
-					
-			 });
+				}
+			});
+
 			
 		});
 			 
-		// highlight feature on pointer-move
-/*		sceneView.on("pointer-move", function(event){
-		  sceneView.hitTest(event).then(function(response){
-			if (response.results.length) {
-			  var graphic = response.results.filter(function (result) {
-				return result.graphic.layer === friendlyLandStreamLayer; 
-				})[0].graphic;
-
-			 sceneView.whenLayerView(graphic.layer).then(function(layerView){ layerView.highlight(graphic); });
-			}
-		  });
-		});
-*/		
 		
 		document.getElementById("sym-frame").addEventListener("change", function() {
 			adjustRenderer();

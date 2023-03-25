@@ -46,7 +46,7 @@
       href="https://js.arcgis.com/4.24/esri/themes/light/main.css"
     />
 
-    <script src="https://jsdev.arcgis.com/4.25/"></script>
+    <script src="https://js.arcgis.com/4.26/"></script>
 
     <script>
       require([
@@ -79,12 +79,12 @@
          *
          * To load a WebMap from an on-premise portal, set the portal
          * url with esriConfig.portalUrl.
+         * Backup item id: 7786bed152fa4d148182bc5981ad2483
          ************************************************************/
         const webmap = new WebMap({
           portalItem: {
             // autocasts as new PortalItem()
             id: "66aa222b3385441e87e0e016800c09ed" // Monterey IPB - Web
-          //id: "7786bed152fa4d148182bc5981ad2483"   // Monterey IPB - Web Light
           }
         });
 
@@ -97,11 +97,7 @@
         });
 
         /************************************************************
-         * Setup the Legend widget
-         ************************************************************/
-        
-        /************************************************************
-         * Setup the LayerList widget
+         * Setup the Legend and LayerList widgets
          ************************************************************/
          view.when(() => {
             const legend = new Legend({
@@ -151,9 +147,13 @@
         /************************************************************
          * Setup the Editor widget
          ************************************************************/
+         const editor = new Editor({
+            view: view
+         });
+         
          const editExpand = new Expand({
              view,
-             content: new Editor({ view: view }),
+             content: editor,
              expandIconClass: "esri-icon-edit"
          });
          view.ui.add(editExpand, "top-right");
