@@ -4,7 +4,7 @@
     {
       "type": "Feature",
       "properties": {
-        "sidc": 10014000001312070000,
+        "sidc": 10034000001312070000,
         "direction": 180
       },
       "geometry": {
@@ -18,7 +18,7 @@
     {
       "type": "Feature",
       "properties": {
-        "sidc": 10014000001304010000,
+        "sidc": 10054000001304010000,
         "direction": 240
       },
       "geometry": {
@@ -32,7 +32,7 @@
     {
       "type": "Feature",
       "properties": {
-        "sidc": 10010100001101050000,
+        "sidc": 10040100001101050000,
         "direction": 300
       },
       "geometry": {
