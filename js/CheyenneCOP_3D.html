@@ -24,7 +24,7 @@
 		}
 	</style>
 	<link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css" />
-	<script src="https://js.arcgis.com/4.16/"></script>
+	<script src="https://js.arcgis.com/4.28/"></script>
 	<script>
 	var streamLayer;
 	require([
@@ -146,7 +146,8 @@
 		};
 
         layerCheyenneTracks = new StreamLayer({
-          url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/cheyenne-mil-tracks-stream/StreamServer",
+          //url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/cheyenne-mil-tracks-stream/StreamServer",
+          url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/Cheyenne-mil-tracks-stream-service-out_v2/StreamServer",
           title: "Cheyenne Tracks", 
           outFields: ["*"],
           // purgeOptions: {
@@ -164,7 +165,7 @@
         });
 
 		layerFireLocations = new FeatureLayer({
-			url: "https://wdcdefense.esri.com/server/rest/services/Hosted/Compound_Analysis_WFL/FeatureServer/9",
+			url: "https://defense.esri.com/server/rest/services/Cheyenne_Visibility_and_Range_map_service/MapServer/1",
 			title: "Effective Fire Locations",
 			opacity: 0.5,
  			outFields: ["*"]
