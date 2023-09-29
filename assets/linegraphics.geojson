@@ -24,7 +24,7 @@
             ]
           ]
         ],
-        "type": "Line"
+        "type": "LineString"
       }
     }
   ]
