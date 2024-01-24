@@ -205,16 +205,16 @@
         layerCheyenneTracks = new StreamLayer({
           url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/cheyenne-mil-tracks-stream/StreamServer",
           title: "Cheyenne Tracks", 
-          outFields: ["*"],
+          //outFields: ["*"],
           // purgeOptions: {
           //   keepLastOnly: true
           // },
-          elevationInfo: {
-				    mode: "relative-to-ground",
+         // elevationInfo: {
+				 //   mode: "relative-to-ground",
             //featureExpressionInfo: {
-    		//			expression: "0",
-    		//		}
-  				},
+    			//			expression: "0",
+    			//		}
+  				//},
           //maximumTrackPoints:1,
           renderer: dictRenderer2525C
         });
@@ -224,8 +224,8 @@
 		map.add(layerCheyenneTracks);
     map.add(videoLayer);
 
-		var spinning = false;
 /*
+		var spinning = false;
 		 function rotateView(angle) {
 		 	if ( angle < 360 && spinning ) {
 		 		sceneView.goTo(
