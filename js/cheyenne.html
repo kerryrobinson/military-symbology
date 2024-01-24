@@ -34,6 +34,7 @@
         bottom: 0;
         height: 94%;
         width: 100%;
+				flex: 1;
       }
 
       .esri-editor .esri-item-list__scroller {
@@ -41,13 +42,25 @@
       }
     </style>
 
-    <link
+<!--    <link
       rel="stylesheet"
       href="https://js.arcgis.com/4.24/esri/themes/light/main.css"
     />
 
     <script src="https://js.arcgis.com/4.26/"></script>
-
+-->
+		<link rel="stylesheet" href="https://jsdev.arcgis.com/next/esri/themes/light/main.css">
+		
+		<script src="https://jsdev.arcgis.com/next/"></script>
+		
+		<script type="module" src="https://js.arcgis.com/calcite-components/2.1.0/calcite.esm.js"></script>
+		
+		<link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.1.0/calcite.css" />
+		
+		<calcite-shell>
+		  <div id="viewDiv">
+		</calcite-shell>
+	  
     <script>
       require([
             "esri/views/MapView", 
@@ -59,7 +72,9 @@
             "esri/widgets/Bookmarks",
             "esri/widgets/Legend",
             "esri/widgets/LayerList",
-            "esri/widgets/CoordinateConversion"
+            "esri/widgets/CoordinateConversion",
+						"esri/layers/VideoLayer",
+						"esri/widgets/VideoPlayer"
         ], function (
             MapView,
             WebMap,
@@ -70,8 +85,17 @@
             Bookmarks,
             Legend,
             LayerList,
-            CoordinateConversion
+            CoordinateConversion,
+						VideoLayer,
+						VideoPlayer
         ) {
+
+
+				  const url = "https://idt-lab-04.esri.com/video/rest/services/facility_of_interest/VideoServer";
+					const videoLayer = new VideoLayer({
+				    url
+				  });
+
         /************************************************************
          * Creates a new WebMap instance. A WebMap must reference
          * a PortalItem ID that represents a WebMap saved to
@@ -86,6 +110,7 @@
             // autocasts as new PortalItem()
             //id: "66aa222b3385441e87e0e016800c09ed" // Monterey IPB - Web
 						id: "571efd8f950447a4907e336684b1437f" // Cheyenne COP
+						layers: [videoLayer]
           }
         });
 
@@ -167,13 +192,23 @@
          });
          view.ui.add(ccWidget, "bottom-left");
          
+         
+        /************************************************************
+         * Setup the VideoPlayer widget
+         ************************************************************/
+         const vpWidget = new VideoPlayer({
+				layer: videoLayer,
+             view: view,
+         });
+         view.ui.add(vpWidget, "bottom-right");
+         
       });
  </script>
   </head>
 
   <body>
     <div id="flex">
-      <div><h1 id="text"> IPB Viewer </h1></div>
+      <div><h1 id="text"> COP Viewer </h1></div>
       <div id="viewDiv"></div>
     </div>
   </body>
