@@ -1,50 +1,439 @@
-<link rel="stylesheet" href="https://jsdev.arcgis.com/next/esri/themes/light/main.css">
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>Cheyenne COP - 2D with Config</title>
+	<style>
+		html,
+		body,
+		#viewDiv {
+			padding: 0;
+			margin: 0;
+			height: 100%;
+			width: 100%;
+      flex: 1; 
+		}
+		#options {
+			padding: 1em;
+		}
+		#options > div {
+			padding: 0.4em;
+		}
+		select {
+			font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+	</style>
+<!--
+  <link rel="stylesheet" href="https://jsdev.arcgis.com/4.16/esri/themes/light/main.css" />
+  <script src="https://jsdev.arcgis.com/4.16/"></script>
+-->
+  <link rel="stylesheet" href="https://jsdev.arcgis.com/next/esri/themes/light/main.css">
+  <script src="https://jsdev.arcgis.com/next/"></script>
+  <script type="module" src="https://js.arcgis.com/calcite-components/2.1.0/calcite.esm.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.1.0/calcite.css" />
+  <calcite-shell>
+    <div id="viewDiv">
+  </calcite-shell>
+  
+  <script>
+	var streamLayer;
+	require([
+		"esri/config",
+		"esri/portal/Portal",
+		"esri/Map",
+		"esri/views/SceneView",
+		"esri/layers/FeatureLayer",
+        "esri/layers/StreamLayer",
+		"esri/renderers/DictionaryRenderer",
+		"esri/widgets/Expand",
+		"esri/widgets/BasemapGallery",
+		"esri/widgets/LayerList",
+		"esri/widgets/CoordinateConversion",
+		"esri/widgets/Fullscreen",
+		"esri/widgets/Feature",
+    "esri/layers/VideoLayer",
+    "esri/widgets/VideoPlayer"
+	], function(
+		esriConfig,
+		Portal,
+		Map,
+		SceneView,
+		FeatureLayer,
+        StreamLayer,
+		DictionaryRenderer,
+		Expand,
+		BasemapGallery,
+		LayerList,
+		CoordinateConversion,
+		Fullscreen,
+		Feature,
+    VideoLayer,
+    VideoPlayer
+	) { 
+	
+    const url =
+      "https://idt-lab-04.esri.com/video/rest/services/facility_of_interest/VideoServer";
+  
+    const videoLayer = new VideoLayer({
+      url
+    });
+		
+		
+		var map = new Map({
+			ground: "world-topobathymetry",
+            basemap: "topo-vector"
+		});
+		
+		
+		var sceneView = new SceneView({
+			container: "viewDiv",
+			map: map,
+			qualityProfile: "high",
+			environment: {
+				lighting: {
+					directShadowsEnabled: true,
+					ambientOcclusionEnabled: true
+				},
+				atmosphere: {
+					quality: "high"
+				}
+			},
+			camera: {
+				position: {
+					x: -104.79,
+					y: 41.1,
+					z: 15000
+				}, 
+				heading: 0,
+				tilt: 15
+			}
+		});
+		
+	
+		dictRenderer2525C = new DictionaryRenderer({
+            url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c
+          fieldMap: {
+            sidc: "sic",
+            speed: "speed_km_hr_1",
+            uniquedesignation: "platformname_1",
+            //combateffectiveness: "operationalcondition",
+            staffcomment: "notes",
+            //higherformation: "owningunit",
+			//direction: "bearing",
+            additionalinformation: "Description",
+            //datetimevalid: "Date",
+            //distance: "Distance",
+            //commonidentifier: "commonidentifier",
+            //datetimeexpired: "datetimeexpired",
+            //equipmentteardowntime: "equipmentteardowntime",
+            //idmode: "idmode",
+            //platformtype: "platformtype",
+            //quantity: "quantity",
+            //reinforced: "reinforced",
+            //reliability: "reliability",
+            //credibility: "credibility",
+            //sigintmobility: "",
+            //targetdesignator: "TargetDesignator",
+            //type: "type",
+            //uniquedesignation2: "",
+            //x: "Latitude",
+            //y: "y",
+            //z: "point_z",
+            //z2: ""
+          },
+          config: {
+			frame: "ON",
+			fill: "ON",
+			icon: "ON",
+			text: "ON",
+			colors: "LIGHT",
+			condition:  "PRIMARY",
+			amplifiers: "ON"
+          }
+        });
 
-<script src="https://jsdev.arcgis.com/next/"></script>
+		var popupTemplate = {
+			title: "[{symbolset} ({identity_})] {symbolentity}",
+			content: [
+				{
+					type: "fields",
+					fieldInfos: [
+						{
+							fieldName: "uniquedesignation",
+							label: "Unique Designation"
+						},
+						{
+							fieldName: "operationalcondition",
+							label: "Operational Condition"
+						},						
+						{
+							fieldName: "specialheadquarters",
+							label: "Special C2 Headquarters"
+						},						
+						{
+							fieldName: "higherformation",
+							label: "Higher Formation"
+						},						
+						{
+							fieldName: "additionalinformation",
+							label: "Altitude / Depth"
+						},						
+						{
+							fieldName: "direction",
+							label: "Direction of Movement"
+						},		
+						{
+							fieldName: "sidc_2525c",
+							label: "SIDC"
+						}
+					]
+				}
+			]
+		};
 
-<script type="module" src="https://js.arcgis.com/calcite-components/2.1.0/calcite.esm.js"></script>
+        layerCheyenneTracks = new StreamLayer({
+          url: "https://wdcrealtime.esri.com:6443/arcgis/rest/services/cheyenne-mil-tracks-stream/StreamServer",
+          title: "Cheyenne Tracks", 
+          outFields: ["*"],
+          // purgeOptions: {
+          //   keepLastOnly: true
+          // },
+          elevationInfo: {
+				    mode: "relative-to-ground",
+            //featureExpressionInfo: {
+    		//			expression: "0",
+    		//		}
+  				},
+          //maximumTrackPoints:1,
+          renderer: dictRenderer2525C
+        });
 
-<link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.1.0/calcite.css" />
 
-<calcite-shell>
-  <div id="viewDiv">
-</calcite-shell>
+ 
+		map.add(layerCheyenneTracks);
+    map.add(videoLayer);
 
-require([
-  "esri/Map",
-  "esri/views/MapView",
-  "esri/layers/VideoLayer",
-  "esri/widgets/VideoPlayer"
-], (Map, MapView, VideoLayer, VideoPlayer) => {
-  // const url =
-  //  "https://idt-lab-04.esri.com/video/rest/services/airfied_monitoring/VideoServer";
+		var spinning = false;
+		
+		 function rotateView(angle) {
+		 	if ( angle < 360 && spinning ) {
+		 		sceneView.goTo(
+		 			{
+		 				position: {
+		 					x: -104.79-((Math.sin((angle/180)*Math.PI))/5),
+		 					y: 41.1+((1-Math.cos((angle/180)*Math.PI))/5),
+		 					z: 15000,
+		 					spatialReference: {
+		 						wkid: 4326
+		 					}
+		 				},
+		 				heading: angle,
+		 				tilt: 75
+		 			},
+		 			{
+		 				speedFactor: 0.2,
+		 				easing: "linear"
+		 			}
+		 		);
+		 		 window.setTimeout(function() {
+		 		 	rotateView((angle+5) % 360);
+		 		 }, 2000);
+		 	}
+		 }
+		
+	
+		function adjustRenderer() {
+			var adjustedDictionaryRenderer;
+			adjustedDictionaryRenderer = dictRenderer2525C.clone();
+			with(adjustedDictionaryRenderer.config) {
+				frame = document.getElementById("sym-frame").value;
+				fill = document.getElementById("sym-fill").value;
+				icon = document.getElementById("sym-icon").value;
+				text = document.getElementById("sym-text").value;
+				colors = document.getElementById("sym-colors").value;
+				condition = document.getElementById("sym-condition").value;
+				amplifiers = document.getElementById("sym-amplifiers").value;
+			}
+			layerCheyenneTracks.renderer = adjustedDictionaryRenderer;
+		}		
+		
+		sceneView
+			.when(function() {
+				sceneView.ui.add("controlDiv", "top-left");
+				sceneView.ui.add(new Fullscreen({
+					view: sceneView
+				}), "top-left");
+				sceneView.ui.add(new Expand({
+					view: sceneView,
+					content: new CoordinateConversion({
+						view: sceneView
+					}),
+					expandIconClass: "esri-icon-applications",
+					expandTooltip: "Coordinate Converter"
+				}), "top-left");
+				sceneView.ui.add(new Expand({
+					view: sceneView,
+					content: new BasemapGallery({
+						view: sceneView
+					}),
+					expandTooltip: "Basemap Gallery"
+				}), "top-left");
+				sceneView.ui.add(new Expand({
+					view: sceneView,
+					content: new LayerList({
+						view: sceneView
+					}),
+					expandTooltip: "Layer List"
+				}), "top-left");
+				sceneView.ui.add(new Expand({
+					view: sceneView,
+					content: options,
+					expandIconClass: "esri-icon-settings",
+					expandTooltip: "Options"
+				}), "bottom-left");
+			}
+		);
+		
+		document.getElementById("spin-btn").addEventListener("click", function() {
+			switch(spinning) {
+				case false:
+					spinning = true;
+					rotateView(sceneView.camera.heading);
+					break;
+				case true:
+					spinning = false;
+					break;
+			}
+		});
 
-  const url =
-    "https://idt-lab-04.esri.com/video/rest/services/facility_of_interest/VideoServer";
+		sceneView.ui.add(connectionStatus, "top-right");
+		connectionStatus.style.display = "inline-flex";
 
-  const videoLayer = new VideoLayer({
-    url
-  });
+		sceneView.whenLayerView(layerCheyenneTracks).then(function(layerView) {
+			streamLayerView = layerView;
 
-  const map = new Map({
-    basemap: "hybrid",
-    layers: [videoLayer]
-  });
+			if (layerView.connectionStatus === "connected") {
+			processConnect();
+			}
 
-  let view = new MapView({
-    container: "viewDiv",
-    map
-  });
+			layerView.watch("connectionStatus", function(value) {
+			if (value === "connected") {
+				processConnect();
+			} else {
+				processDisconnect();
+			}
+			});
+			
+			
+		});
+		
 
-  const videoPlayer = new VideoPlayer({
-    layer: videoLayer,
-    view
-  });
+		
+		document.getElementById("sym-frame").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-fill").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-icon").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-text").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-colors").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-condition").addEventListener("change", function() {
+			adjustRenderer();
+		});
+		
+		document.getElementById("sym-amplifiers").addEventListener("change", function() {
+			adjustRenderer();
+		});
+	});
 
-  view.ui.add(videoPlayer, "top-right");
 
-  view.when(async () => {
-    await videoLayer.load();
-    view.goTo(videoLayer.fullExtent);
-  });
-});
+    function processConnect() {
+		  connectionStatus.style.backgroundColor = "#ffffff";
+          connectionStatus.innerHTML = "connected";
+    }
+
+    function processDisconnect() {
+          connectionStatus.style.backgroundColor = "orange";
+          connectionStatus.innerHTML = "reconnecting";
+    }	
+
+</script>
+</head>
+<body>
+	<div id="viewDiv"></div>
+	<div id="controlDiv" style="height: 32px; width: 32px;">
+		<input class="esri-component esri-widget--button esri-widget esri-interactive"
+			style="border: none; box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px; font-family: 'CalciteWebCoreIcons';"
+			type="button"
+			id="spin-btn"
+			value="&#xe66e;"
+		/></div>  
+	<div id="options" class="esri-widget" style="width: 300px;">
+    	<div id="connectionStatus" class="esri-widget">Disconnected</div>
+		<p>Select symbology options:</p>
+		<div>
+			<label for="sym-frame">Frame</label>
+			<select id="sym-frame">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-fill">Fill</label>
+			<select id="sym-fill">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-icon">Icon</label>
+			<select id="sym-icon">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-text">Text</label>
+			<select id="sym-text">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-colors">Colors</label>
+			<select id="sym-colors">
+				<option value="LIGHT" selected>Light</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="DARK">Dark</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-condition">Condition</label>
+			<select id="sym-condition">
+				<option value="PRIMARY" selected>Primary</option>
+				<option value="ALTERNATE">Alternate</option>
+			</select>
+		</div>
+		<div>
+			<label for="sym-amplifiers">Amplifiers</label>
+			<select id="sym-amplifiers">
+				<option value="ON" selected>On</option>
+				<option value="OFF">Off</option>
+			</select>
+		</div>
+	</div>
+</body>
+</html>
