@@ -42,7 +42,7 @@
 		"esri/config",
 		"esri/portal/Portal",
 		"esri/Map",
-		"esri/views/SceneView",
+		"esri/views/MapView",
 		"esri/layers/FeatureLayer",
         "esri/layers/StreamLayer",
 		"esri/renderers/DictionaryRenderer",
@@ -58,7 +58,7 @@
 		esriConfig,
 		Portal,
 		Map,
-		SceneView,
+		MapView,
 		FeatureLayer,
         StreamLayer,
 		DictionaryRenderer,
@@ -82,10 +82,20 @@
 		
 		var map = new Map({
 			ground: "world-topobathymetry",
-            basemap: "topo-vector"
+			basemap: "topo-vector"
 		});
 		
-		
+		var mapView - new mapView({
+			container: "viewDiv",
+			map: map,
+			zoom: 10,
+			constraints: {
+				rotationEnabled: false
+			},
+			center: [-104.79,41.1]
+		});
+
+/*
 		var sceneView = new SceneView({
 			container: "viewDiv",
 			map: map,
@@ -109,7 +119,7 @@
 				tilt: 15
 			}
 		});
-		
+*/
 	
 		dictRenderer2525C = new DictionaryRenderer({
             url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c
@@ -215,7 +225,7 @@
     map.add(videoLayer);
 
 		var spinning = false;
-		
+/*
 		 function rotateView(angle) {
 		 	if ( angle < 360 && spinning ) {
 		 		sceneView.goTo(
@@ -306,11 +316,11 @@
 					break;
 			}
 		});
-
-		sceneView.ui.add(connectionStatus, "top-right");
+*/
+		mapView.ui.add(connectionStatus, "top-right");
 		connectionStatus.style.display = "inline-flex";
 
-		sceneView.whenLayerView(layerCheyenneTracks).then(function(layerView) {
+		mapView.whenLayerView(layerCheyenneTracks).then(function(layerView) {
 			streamLayerView = layerView;
 
 			if (layerView.connectionStatus === "connected") {
@@ -328,7 +338,7 @@
 			
 		});
 		
-
+/*
 		
 		document.getElementById("sym-frame").addEventListener("change", function() {
 			adjustRenderer();
@@ -357,6 +367,8 @@
 		document.getElementById("sym-amplifiers").addEventListener("change", function() {
 			adjustRenderer();
 		});
+
+ */
 	});
 
 
@@ -382,8 +394,8 @@
 			value="&#xe66e;"
 		/></div>  
 	<div id="options" class="esri-widget" style="width: 300px;">
-    	<div id="connectionStatus" class="esri-widget">Disconnected</div>
-		<p>Select symbology options:</p>
+  <div id="connectionStatus" class="esri-widget">Disconnected</div>
+		<!--<p>Select symbology options:</p>
 		<div>
 			<label for="sym-frame">Frame</label>
 			<select id="sym-frame">
@@ -434,6 +446,7 @@
 				<option value="OFF">Off</option>
 			</select>
 		</div>
+		-->
 	</div>
 </body>
 </html>
