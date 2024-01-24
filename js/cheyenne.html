@@ -1,0 +1,50 @@
+<link rel="stylesheet" href="https://jsdev.arcgis.com/next/esri/themes/light/main.css">
+
+<script src="https://jsdev.arcgis.com/next/"></script>
+
+<script type="module" src="https://js.arcgis.com/calcite-components/2.1.0/calcite.esm.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.1.0/calcite.css" />
+
+<calcite-shell>
+  <div id="viewDiv">
+</calcite-shell>
+
+require([
+  "esri/Map",
+  "esri/views/MapView",
+  "esri/layers/VideoLayer",
+  "esri/widgets/VideoPlayer"
+], (Map, MapView, VideoLayer, VideoPlayer) => {
+  // const url =
+  //  "https://idt-lab-04.esri.com/video/rest/services/airfied_monitoring/VideoServer";
+
+  const url =
+    "https://idt-lab-04.esri.com/video/rest/services/facility_of_interest/VideoServer";
+
+  const videoLayer = new VideoLayer({
+    url
+  });
+
+  const map = new Map({
+    basemap: "hybrid",
+    layers: [videoLayer]
+  });
+
+  let view = new MapView({
+    container: "viewDiv",
+    map
+  });
+
+  const videoPlayer = new VideoPlayer({
+    layer: videoLayer,
+    view
+  });
+
+  view.ui.add(videoPlayer, "top-right");
+
+  view.when(async () => {
+    await videoLayer.load();
+    view.goTo(videoLayer.fullExtent);
+  });
+});
