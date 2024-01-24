@@ -24,7 +24,7 @@
 		}
 	</style>
 	<link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
-	<script src="https://js.arcgis.com/4.20/"></script>
+	<script src="https://js.arcgis.com/4.24/"></script>
 	<script>
 	require([
 		"esri/config",
@@ -101,6 +101,30 @@
 			//url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", // 2525c
  			url: "https://www.arcgis.com/sharing/rest/content/items/75b40938249848dcaa7a9f3a8fec2895", //2525d latest
            fieldMap: dictionaryRendererFieldMap,
+			config: dictionaryRendererConfig
+		});
+		
+		var dictionaryRendererFieldMap_cm = {
+				sidc: "sidc_2525c",
+				status: "status",
+				echelon: "echelon",
+				additionalinformation: "additionalinformation",
+				combateffectiveness: "combateffectiveness",
+				operationalcondition: "operationalcondition",
+				higherformation: "higherFormation",
+				direction: "direction",
+				speed: "speed",
+				staffcomment: "staffComment",
+				type: "Type",
+				uniquedesignation: "uniquedesignation",
+				distance: "width",
+				z: "z",
+				z2: "z2"
+		};
+		var dictionaryRenderer2525c = new DictionaryRenderer({
+			url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", // 2525c
+ 			//url: "https://www.arcgis.com/sharing/rest/content/items/75b40938249848dcaa7a9f3a8fec2895", //2525d latest
+           fieldMap: dictionaryRendererFieldMap_cm,
 			config: dictionaryRendererConfig
 		});
 		
@@ -289,7 +313,7 @@
 			renderer: dictionaryRenderer2525d
 		});
 
-/*		var layerControlMeasuresPoints = new FeatureLayer({
+		var layerControlMeasuresPoints = new FeatureLayer({
 			title: "Control Measures - Points",
 			url: "https://services.arcgis.com/pmcEyn9tLWCoX7Dm/ArcGIS/rest/services/Ft_Irwin_OPLAN/FeatureServer/21",
             outFields: ["*"],
@@ -312,14 +336,14 @@
 			popupTemplate: popupTemplateCM,
 			renderer: dictionaryRenderer2525c
 		});
-*/
 
-		//map.add(layerControlMeasuresLines);
-		//map.add(layerControlMeasuresAreas);
+
+		map.add(layerControlMeasuresLines);
+		map.add(layerControlMeasuresAreas);
 		map.add(layerUnits);
 		map.add(layerActivities);
 		map.add(layerAir);
-		//map.add(layerControlMeasuresPoints);
+		map.add(layerControlMeasuresPoints);
 
 
 		var spinning = false;

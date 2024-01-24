@@ -24,7 +24,7 @@
 		}
 	</style>
 	<link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css" />
-	<script src="https://js.arcgis.com/4.16/"></script>
+	<script src="https://jsdev.arcgis.com/4.26/"></script>
 	<script>
 	var streamLayer;
 	require([
@@ -41,7 +41,7 @@
 		"esri/widgets/CoordinateConversion",
 		"esri/widgets/Fullscreen",
 		"esri/widgets/Feature"
-	], function(
+		], function(
 		esriConfig,
 		Portal,
 		Map,
@@ -85,29 +85,6 @@
             sidc: "sidc_2525c",
             speed: "Speed",
             uniquedesignation: "uniquedesignation",
-            //combateffectiveness: "operationalcondition",
-            //staffcomment: "staffcomment",
-            //higherformation: "owningunit",
-            //additionalinformation: "Description",
-            //datetimevalid: "Date",
-            //distance: "Distance",
-            //commonidentifier: "commonidentifier",
-            //datetimeexpired: "datetimeexpired",
-            //equipmentteardowntime: "equipmentteardowntime",
-            //idmode: "idmode",
-            //platformtype: "platformtype",
-            //quantity: "quantity",
-            //reinforced: "reinforced",
-            //reliability: "reliability",
-            //credibility: "credibility",
-            //sigintmobility: "",
-            //targetdesignator: "TargetDesignator",
-            //type: "type",
-            //uniquedesignation2: "",
-            //x: "X",
-            //y: "Y",
-            //z: "Z",
-            //z2: ""
           },
           config: {
 			frame: "ON",
@@ -126,30 +103,8 @@
             sidc: "sidc",
             speed: "Speed",
             uniquedesignation: "uniquedesignation",
-            //combateffectiveness: "operationalcondition",
-            //staffcomment: "staffcomment",
             higherformation: "owningunit",
-            //additionalinformation: "Description",
-            //datetimevalid: "Date",
-            //distance: "Distance",
-            //commonidentifier: "commonidentifier",
-            //datetimeexpired: "datetimeexpired",
-            //equipmentteardowntime: "equipmentteardowntime",
-            //idmode: "idmode",
-            //platformtype: "platformtype",
-            //quantity: "quantity",
-            //reinforced: "reinforced",
-            //reliability: "reliability",
-            //credibility: "credibility",
-            //sigintmobility: "",
-            //targetdesignator: "TargetDesignator",
-            //type: "type",
-            //uniquedesignation2: "",
-            //x: "X",
-            //y: "Y",
-            //z: "Z",
-            //z2: ""
-          },
+        },
           config: {
 			frame: "ON",
 			fill: "ON",
@@ -353,19 +308,13 @@
 				}
 				});
 			
-			//streamLayerView.effect = {
-			//	filter: {
-			//		where: "status911 = " + 1,
-			//	},
-			//	includedEffect: "invert(100%)"
-			//};
 			
-			
+ 
 			streamLayerView.on("data-received", (event) => {
 
 				if (event.attributes["status911"]===1) {
 					console.log("Alert: " + event.attributes["uniquedesignation"]);
-                    var highlightQuery = friendlyLandStreamLayer.createQuery();
+					var highlightQuery = friendlyLandStreamLayer.createQuery();
                     highlightQuery.where = "track_id='" + event.attributes["track_id"] + "'";
                     streamLayerView.queryFeatures(highlightQuery).then(function (response) {
 						streamLayerView.highlight(response.features);
