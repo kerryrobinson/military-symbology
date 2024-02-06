@@ -47,9 +47,9 @@
 		
 		<script src="https://jsdev.arcgis.com/next/"></script>
 		
-		<script type="module" src="https://js.arcgis.com/calcite-components/2.1.0/calcite.esm.js"></script>
+		<script type="module" src="https://js.arcgis.com/calcite-components/2.3.0/calcite.esm.js"></script>
 		
-		<link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.1.0/calcite.css" />
+		<link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.3.0/calcite.css" />
 		
 		 
     <script>
@@ -99,7 +99,7 @@
 				  });
 
           // Cheyenne layers
-          
+  /*        
           var layerCheyenneCompound1 = new FeatureLayer({url: "https://defense.esri.com/server/rest/services/Hosted/Cheyenne_Compound_Map/FeatureServer/1"});
           var layerCheyenneCompound2 = new FeatureLayer({url: "https://defense.esri.com/server/rest/services/Hosted/Cheyenne_Compound_Map/FeatureServer/2"});
           var layerCheyenneCompound3 = new FeatureLayer({url: "https://defense.esri.com/server/rest/services/Hosted/Cheyenne_Compound_Map/FeatureServer/3"});
@@ -135,7 +135,7 @@
             renderer: dictRenderer2525C_air
           });
 
-
+*/
  
        /************************************************************
          * Creates a new WebMap instance. A WebMap must reference
@@ -150,12 +150,15 @@
           portalItem: {
             // autocasts as new PortalItem()
             //id: "66aa222b3385441e87e0e016800c09ed" // Monterey IPB - Web
-						id: "571efd8f950447a4907e336684b1437f" // Cheyenne COP
+						//id: "571efd8f950447a4907e336684b1437f" // Cheyenne COP (old)
+            id: "c597128295914037bb8c4ae840a48b86"
           }
         });
 
+       /* 
         var map = new Map({
            basemap: "topo",
+
 		    });
 		
         map.add(layerCheyenneCompound8);
@@ -165,16 +168,20 @@
         map.add(layerCheyenneCompound3);
         map.add(layerCheyenneCompound2);
         map.add(layerCheyenneCompound1);
-        map.add(friendlyTracksStreamLayer);
-        map.add(videoLayer);
+        
+        map.add(friendlyTracksStreamLayer);5
+        */
+        webmap.add(videoLayer, 5);
  
 
         /************************************************************
          * Set the WebMap instance to the map property in a MapView.
          ************************************************************/
         const view = new MapView({
-          map: map,
-          container: "viewDiv"
+          map: webmap,
+          container: "viewDiv",
+          //zoom: 13,
+			    //center: [-104.79, 41.1]
         });
 
         /************************************************************
@@ -267,7 +274,7 @@
          
           view.when(async () => {
             await videoLayer.load();
-            view.goTo(videoLayer.fullExtent);
+            //view.goTo(videoLayer.fullExtent);
           });
       });
  </script>
