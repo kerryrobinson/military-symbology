@@ -97,45 +97,6 @@
             //title: "Facility of Interest",
 				    url
 				  });
-
-          // Cheyenne layers
-  /*        
-          var layerCheyenneCompound1 = new FeatureLayer({url: "https://defense.esri.com/server/rest/services/Hosted/Cheyenne_Compound_Map/FeatureServer/1"});
-          var layerCheyenneCompound2 = new FeatureLayer({url: "https://defense.esri.com/server/rest/services/Hosted/Cheyenne_Compound_Map/FeatureServer/2"});
-          var layerCheyenneCompound3 = new FeatureLayer({url: "https://defense.esri.com/server/rest/services/Hosted/Cheyenne_Compound_Map/FeatureServer/3"});
-          var layerCheyenneCompound4 = new FeatureLayer({url: "https://defense.esri.com/server/rest/services/Hosted/Cheyenne_Compound_Map/FeatureServer/4"});
-          var layerCheyenneCompound5 = new FeatureLayer({url: "https://defense.esri.com/server/rest/services/Hosted/Cheyenne_Compound_Map/FeatureServer/5"});
-          var layerCheyenneCompound6 = new FeatureLayer({url: "https://defense.esri.com/server/rest/services/Hosted/Cheyenne_Compound_Map/FeatureServer/6"});
-          var layerCheyenneCompound8 = new FeatureLayer({url: "https://defense.esri.com/server/rest/services/Hosted/Cheyenne_Compound_Map/FeatureServer/8"});
-
-
-          var dictRenderer2525C_air = new DictionaryRenderer({
-            url: "https://www.arcgis.com/sharing/rest/content/items/2dae1ae78e604d9a9924caaff771b1e6", //2525c
-            fieldMap: {
-              sidc: "sic_1",
-              speed: "speed_km_hr_1",
-              uniquedesignation: "platformname_1"
-          },
-            config: {
-              frame: "ON",
-              fill: "ON",
-              icon: "ON",
-              text: "ON",
-              colors: "LIGHT",
-              condition:  "PRIMARY",
-              amplifiers: "ON"
-          }
-        });
-
-        var friendlyTracksStreamLayer = new StreamLayer({
-		        url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/Cheyenne-mil-tracks-stream-service-out_v2/StreamServer",
-            title: "Friendly Tracks", 
-            //outFields: ["*"]
-            //popupTemplate: popupTemplateAirUnits,
-            renderer: dictRenderer2525C_air
-          });
-
-*/
  
        /************************************************************
          * Creates a new WebMap instance. A WebMap must reference
@@ -151,29 +112,11 @@
             // autocasts as new PortalItem()
             //id: "66aa222b3385441e87e0e016800c09ed" // Monterey IPB - Web
 						//id: "571efd8f950447a4907e336684b1437f" // Cheyenne COP (old)
-            id: "c597128295914037bb8c4ae840a48b86"
+            id: "c597128295914037bb8c4ae840a48b86"  // Cheyenne COP
           }
         });
 
-       /* 
-        var map = new Map({
-           basemap: "topo",
-
-		    });
-		
-        map.add(layerCheyenneCompound8);
-        map.add(layerCheyenneCompound6);
-        map.add(layerCheyenneCompound5);
-        map.add(layerCheyenneCompound4);
-        map.add(layerCheyenneCompound3);
-        map.add(layerCheyenneCompound2);
-        map.add(layerCheyenneCompound1);
-        
-        map.add(friendlyTracksStreamLayer);5
-        */
-        webmap.add(videoLayer, 5);
  
-
         /************************************************************
          * Set the WebMap instance to the map property in a MapView.
          ************************************************************/
@@ -218,7 +161,7 @@
          const bookmarks = new Bookmarks({
           view: view,
           // allows bookmarks to be added, edited, or deleted
-          editingEnabled: true,
+          //editingEnabled: true,
           visibleElements: {
             time: false // don't show the time (h:m:s) next to the date
           }
@@ -229,7 +172,7 @@
             content: bookmarks,
             expandIconClass: "esri-icon-bookmark"
         });
-        view.ui.add(bkExpand, "top-right");
+        view.ui.add(bkExpand, "top-left");
       
  
         /************************************************************
@@ -252,7 +195,7 @@
          const ccWidget = new CoordinateConversion({
              view: view,
          });
-         view.ui.add(ccWidget, "bottom-left");
+         view.ui.add(ccWidget, "bottom-right");
          
          
         /************************************************************
@@ -270,9 +213,10 @@
          //});
          //view.ui.add(videoExpand, "top-right");
          //view.ui.add(vpWidget, "bottom-right");
-         view.ui.add("video-player-block", "bottom-right");
+         view.ui.add("video-player-block", "bottom-left");
          
           view.when(async () => {
+            view.map.add(videoLayer)
             await videoLayer.load();
             //view.goTo(videoLayer.fullExtent);
           });
