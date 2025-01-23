@@ -42,16 +42,11 @@
       }
     </style>
 
-
 		<link rel="stylesheet" href="https://jsdev.arcgis.com/next/esri/themes/light/main.css">
-		
 		<script src="https://jsdev.arcgis.com/next/"></script>
-		
-		<script type="module" src="https://js.arcgis.com/calcite-components/2.3.0/calcite.esm.js"></script>
-		
+  	<script type="module" src="https://js.arcgis.com/calcite-components/2.3.0/calcite.esm.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.3.0/calcite.css" />
 		
-		 
     <script>
       require([
             "esri/views/MapView", 
@@ -110,8 +105,6 @@
         const webmap = new WebMap({
           portalItem: {
             // autocasts as new PortalItem()
-            //id: "66aa222b3385441e87e0e016800c09ed" // Monterey IPB - Web
-						//id: "571efd8f950447a4907e336684b1437f" // Cheyenne COP (old)
             id: "c597128295914037bb8c4ae840a48b86"  // Cheyenne COP
           }
         });
@@ -206,19 +199,11 @@
 			    layer: videoLayer,
           view: view
          });
-         //const videoExpand = new Expand({
-         // view,
-         // content: vpWidget,
-         // expandIconClass: "esri-icon-play"
-         //});
-         //view.ui.add(videoExpand, "top-right");
-         //view.ui.add(vpWidget, "bottom-right");
-         view.ui.add("video-player-block", "bottom-left");
+        view.ui.add("video-player-block", "bottom-left");
          
           view.when(async () => {
             view.map.add(videoLayer)
             await videoLayer.load();
-            //view.goTo(videoLayer.fullExtent);
           });
       });
  </script>
