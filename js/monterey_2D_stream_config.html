@@ -78,9 +78,9 @@
 			center: [-121.839805, 36.589768]
 		});
 		
-	
+		// Slightly different SIDC field mapping for land tracks (`sidc_2525c`)
 		dictRenderer2525C = new DictionaryRenderer({
-          url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c
+          url: "https://www.arcgis.com/sharing/rest/content/items/f3dc85dd8cfe419abf7ea9769e4bc19c", //2525c
           fieldMap: {
             sidc: "sidc_2525c",
             speed: "Speed",
@@ -98,9 +98,9 @@
         });	
 		
 		dictRenderer2525C_air = new DictionaryRenderer({
-            url: "https://www.arcgis.com/sharing/rest/content/items/64d5c3d58a924cd98587fd80f9ec4ef1", //2525c
+            url: "https://www.arcgis.com/sharing/rest/content/items/f3dc85dd8cfe419abf7ea9769e4bc19c", //2525c
           fieldMap: {
-            sidc: "sidc",
+            sidc: "sidc", // `sidc` is used for air tracks
             speed: "Speed",
             uniquedesignation: "uniquedesignation",
             higherformation: "owningunit",
@@ -175,7 +175,7 @@
 		};
 
         friendlyAirStreamLayer = new StreamLayer({
-		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_airtracks_stream-service-out/StreamServer",
+		  url: "https://wdcrealtimeevents.esri.com:6443/arcgis/rest/services/monterey_airtacks_stream-service/StreamServer",
           title: "Friendly Air Tracks", 
           outFields: ["*"],
           elevationInfo: {
@@ -187,7 +187,7 @@
 
 
         friendlyLandStreamLayer = new StreamLayer({
-		  url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_landtracks_stream-service-out/StreamServer",
+		  url: "https://wdcrealtimeevents.esri.com:6443/arcgis/rest/services/monterey_landtracks_stream-service-out/StreamServer",
           title: "Friendly Land Tracks", 
           outFields: ["*"],
            elevationInfo: {
@@ -201,7 +201,7 @@
         });
 
         cotStreamLayer = new StreamLayer({
-		   url: "https://defenserealtime.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
+		   url: "https://wdcrealtimeevents.esri.com:6443/arcgis/rest/services/monterey_cot_stream-service-out/StreamServer",
           title: "CoT Reports", 
           outFields: ["*"],
            elevationInfo: {
